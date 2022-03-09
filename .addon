@@ -1,0 +1,15 @@
+{
+  "Title": "Rifter\u0027s Co-op",
+  "Type": "game",
+  "Org": "rifter",
+  "Ident": "rifters_coop",
+  "Schema": 1,
+  "HasAssets": true,
+  "AssetsPath": "",
+  "ResourcePaths": [
+    "/UI/*"
+  ],
+  "HasCode": true,
+  "CodePath": "/code/",
+  "RootNamespace": "Sandbox"
+}
