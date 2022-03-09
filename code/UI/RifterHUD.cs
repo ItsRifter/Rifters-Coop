@@ -9,6 +9,8 @@ public partial class RifterHUD : Sandbox.HudEntity<RootPanel>
 		RootPanel.AddChild<ChatBox>();
 		RootPanel.AddChild<Scoreboard<ScoreboardEntry>>();
 		RootPanel.AddChild<NameTags>();
+
+		RootPanel.AddChild<VitalSigns>();
 	}
 }
 

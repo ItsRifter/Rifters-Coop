@@ -5,6 +5,8 @@ using System.Linq;
 
 partial class PlayerBase : Player
 {
+	[Net] public int Armor { get; private set; }
+
 	public override void Respawn()
 	{
 		base.Respawn();

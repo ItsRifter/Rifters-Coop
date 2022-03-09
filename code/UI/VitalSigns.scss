@@ -1,0 +1,56 @@
+﻿.vitalsigns {
+    position: absolute;
+    bottom: 5px;
+    left: 15px;
+    width: 325px;
+    height: 92px;
+    opacity: 0;
+    font-family: Arial;
+    font-size: 48px;
+    color: white;
+
+    //background-color: white;
+
+    &.active {
+        opacity: 1;
+    }
+
+    .healthIcon {
+        width: 92px;
+        background-size: 92px 92px;
+        background-image: url(ui/hud/heart-tint.png);
+        background-repeat: no-repeat;
+    }
+
+    .health {
+        height: 48px;
+        width: 45%;
+        left: 0px;
+        bottom: -30px;
+    }
+
+    .armorIcon {
+        width: 92px;
+        left: -50px;
+        background-size: 92px 92px;
+        background-image: url(ui/hud/armor-tint.png);
+        background-repeat: no-repeat;
+        opacity: 0;
+
+        &.active {
+            opacity: 1;
+        }
+    }
+
+    .armor {
+        opacity: 1;
+        width: 0%;
+        left: -25px;
+        bottom: -30px;
+        opacity: 0;
+
+        &.active {
+            opacity: 1;
+        }
+    }
+}
