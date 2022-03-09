@@ -145,9 +145,7 @@ partial class WepBase : BaseWeapon
 	/// </summary>
 	public virtual void ShootBullet( float spread, float force, float damage, float bulletSize, int bulletCount = 1 )
 	{
-		//
-		// Seed rand using the tick, so bullet cones match on client and server
-		//
+
 		Rand.SetSeed( Time.Tick );
 
 		for ( int i = 0; i < bulletCount; i++ )
@@ -156,10 +154,6 @@ partial class WepBase : BaseWeapon
 			forward += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * spread * 0.25f;
 			forward = forward.Normal;
 
-			//
-			// ShootBullet is coded in a way where we can have bullets pass through shit
-			// or bounce off shit, in which case it'll return multiple results
-			//
 			foreach ( var tr in TraceBullet( Owner.EyePosition, Owner.EyePosition + forward * 5000, bulletSize ) )
 			{
 				tr.Surface.DoBulletImpact( tr );
@@ -167,12 +161,21 @@ partial class WepBase : BaseWeapon
 				if ( !IsServer ) continue;
 				if ( !tr.Entity.IsValid() ) continue;
 
+
 				var damageInfo = DamageInfo.FromBullet( tr.EndPosition, forward * 100 * force, damage )
 					.UsingTraceResult( tr )
 					.WithAttacker( Owner )
 					.WithWeapon( this );
 
-				tr.Entity.TakeDamage( damageInfo );
+				if ( tr.Entity is BaseNPC npc )
+				{
+					npc.TakeDamage( damageInfo );
+				}
+				else
+				{
+					tr.Entity.TakeDamage( damageInfo );
+				}
+
 			}
 		}
 	}

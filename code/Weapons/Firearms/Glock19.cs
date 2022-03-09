@@ -16,7 +16,7 @@ partial class Glock19 : WepBase
 	public override float PrimaryRate => 15.0f;
 	public override float SecondaryRate => 1.0f;
 	public override float ReloadTime => 3.0f;
-
+	public override int Damage => 20;
 	public override int Bucket => 1;
 
 	public override void Spawn()

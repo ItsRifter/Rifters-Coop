@@ -8,6 +8,8 @@ partial class PlayerBase : Player
 	[Net] public int Armor { get; private set; }
 	public bool SupressPickupNotices { get; private set; }
 
+	private DamageInfo lastDMGInfo;
+
 	public PlayerBase()
 	{
 		Inventory = new Inventory(this);
@@ -30,6 +32,7 @@ partial class PlayerBase : Player
 		SupressPickupNotices = true;
 
 		Inventory.Add( new Glock19(), true );
+		GiveAmmo( AmmoType.Pistol, 999 );
 
 		SupressPickupNotices = false;
 	}
@@ -39,6 +42,8 @@ partial class PlayerBase : Player
 		if ( info.Attacker is PlayerBase )
 			return;
 
+		lastDMGInfo = info;
+
 		base.TakeDamage( info );
 	}
 
@@ -46,5 +51,12 @@ partial class PlayerBase : Player
 	{
 		base.Simulate( cl );
 		SimulateActiveChild( cl, ActiveChild );
+	}
+
+	public override void OnKilled()
+	{
+		base.OnKilled();
+
+		BecomeRagdollOnClient( lastDMGInfo.Force, lastDMGInfo.HitboxIndex );
 	}
 }
