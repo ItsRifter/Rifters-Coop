@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 public partial class RifterGame : Sandbox.Game
 {
+	public static new RifterGame Current => Sandbox.Game.Current as RifterGame;
+
 	private RifterHUD oldHud;
 
 	public RifterGame()

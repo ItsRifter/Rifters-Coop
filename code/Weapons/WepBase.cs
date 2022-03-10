@@ -1,19 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 using Sandbox;
 
-partial class WepBase : BaseWeapon
+partial class WepBase : BaseCarriable
 {
 	public virtual AmmoType AmmoType => AmmoType.Pistol;
-
 	public virtual int Damage => 1;
-	public virtual int ClipSize => 16;
+	public virtual int ClipSize => 20;
 	public virtual float ReloadTime => 3.0f;
+	public virtual float PrimaryRate => 5.0f;
+	public virtual float SecondaryRate => 15.0f;
 	public virtual int Bucket => 1;
 	public virtual int BucketWeight => 100;
 	public virtual bool IsMelee => false;
-	public virtual string WorldModelPath => "weapons/rust_pistol/rust_pistol.vmdl";
-	public override string ViewModelPath => "weapons/rust_pistol/v_rust_pistol.vmdl";
-	public virtual string PickupSound => "default_pickup";
+	public virtual string WorldModelPath => "";
+	public virtual new string ViewModelPath { get; set; } = "";
+	public virtual string PickupSound { get; set; } = "default_pickup";
+	public virtual string FireSound { get; set; } = "";
+
+	[Net, Predicted]
+	public TimeSince TimeSincePrimaryAttack { get; set; }
+
+	[Net, Predicted]
+	public TimeSince TimeSinceSecondaryAttack { get; set; }
 
 	[Net, Predicted]
 	public int AmmoClip { get; set; }
@@ -42,9 +51,33 @@ partial class WepBase : BaseWeapon
 
 		TimeSinceDeployed = 0;
 
+		if ( AmmoClip <= 0 )
+		{
+			ViewModelEntity?.SetAnimParameter( "empty", true );
+		}
+
 		IsReloading = false;
 	}
 
+	public virtual bool CanPrimaryAttack()
+	{
+		if ( !Owner.IsValid() || !Input.Down( InputButton.Attack1 ) ) return false;
+
+		var rate = PrimaryRate;
+		if ( rate <= 0 ) return true;
+
+		return TimeSincePrimaryAttack > (1 / rate);
+	}
+
+	public virtual bool CanSecondaryAttack()
+	{
+		if ( !Owner.IsValid() || !Input.Down( InputButton.Attack2 ) ) return false;
+
+		var rate = SecondaryRate;
+		if ( rate <= 0 ) return true;
+
+		return TimeSinceSecondaryAttack > (1 / rate);
+	}
 
 	public override void Spawn()
 	{
@@ -52,12 +85,14 @@ partial class WepBase : BaseWeapon
 
 		SetModel( WorldModelPath );
 
+		AmmoClip = ClipSize;
+
 		PickupTrigger = new PickupTrigger();
 		PickupTrigger.Parent = this;
 		PickupTrigger.Position = Position;
 	}
 
-	public override void Reload()
+	public virtual void Reload()
 	{
 		if ( IsReloading )
 			return;
@@ -90,6 +125,30 @@ partial class WepBase : BaseWeapon
 			base.Simulate( owner );
 		}
 
+		if ( Input.Pressed( InputButton.Reload ) && !IsReloading )
+			Reload();
+
+		if ( CanPrimaryAttack() )
+		{
+			using ( LagCompensation() )
+			{
+				TimeSincePrimaryAttack = 0;
+				AttackPrimary();
+			}
+		}
+
+		if ( !Owner.IsValid() )
+			return;
+
+		if ( CanSecondaryAttack() )
+		{
+			using ( LagCompensation() )
+			{
+				TimeSinceSecondaryAttack = 0;
+				AttackSecondary();
+			}
+		}
+
 		if ( IsReloading && TimeSinceReload > ReloadTime )
 		{
 			OnReloadFinish();
@@ -108,17 +167,24 @@ partial class WepBase : BaseWeapon
 
 			AmmoClip += ammo;
 		}
+
+		if( ViewModelEntity?.GetAnimParameterBool( "empty" ) != false )
+			ViewModelEntity?.SetAnimParameter( "empty", false );
 	}
 
 	[ClientRpc]
 	public virtual void StartReloadEffects()
 	{
 		ViewModelEntity?.SetAnimParameter( "reload", true );
-
-		// TODO - player third person model reload
 	}
 
-	public override void AttackPrimary()
+	public virtual void AttackPrimary()
+	{
+		TimeSincePrimaryAttack = 0;
+		TimeSinceSecondaryAttack = 0;
+	}
+
+	public virtual void AttackSecondary()
 	{
 		TimeSincePrimaryAttack = 0;
 		TimeSinceSecondaryAttack = 0;
@@ -140,9 +206,22 @@ partial class WepBase : BaseWeapon
 		CrosshairPanel?.CreateEvent( "fire" );
 	}
 
-	/// <summary>
-	/// Shoot a single bullet
-	/// </summary>
+	public IEnumerable<TraceResult> BulletTrace( Vector3 start, Vector3 end, float radius = 2.0f )
+	{
+		bool InWater = Map.Physics.IsPointWater( start );
+
+		var tr = Trace.Ray( start, end )
+				.UseHitboxes()
+				.HitLayer( CollisionLayer.Water, !InWater )
+				.HitLayer( CollisionLayer.Debris )
+				.Ignore( Owner )
+				.Ignore( this )
+				.Size( radius )
+				.Run();
+
+		yield return tr;
+	}
+
 	public virtual void ShootBullet( float spread, float force, float damage, float bulletSize, int bulletCount = 1 )
 	{
 
@@ -154,28 +233,19 @@ partial class WepBase : BaseWeapon
 			forward += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * spread * 0.25f;
 			forward = forward.Normal;
 
-			foreach ( var tr in TraceBullet( Owner.EyePosition, Owner.EyePosition + forward * 5000, bulletSize ) )
+			foreach ( var tr in BulletTrace( Owner.EyePosition, Owner.EyePosition + forward * 5000, bulletSize ) )
 			{
 				tr.Surface.DoBulletImpact( tr );
 
 				if ( !IsServer ) continue;
 				if ( !tr.Entity.IsValid() ) continue;
 
-
 				var damageInfo = DamageInfo.FromBullet( tr.EndPosition, forward * 100 * force, damage )
 					.UsingTraceResult( tr )
 					.WithAttacker( Owner )
 					.WithWeapon( this );
 
-				if ( tr.Entity is BaseNPC npc )
-				{
-					npc.TakeDamage( damageInfo );
-				}
-				else
-				{
-					tr.Entity.TakeDamage( damageInfo );
-				}
-
+				tr.Entity.TakeDamage( damageInfo );
 			}
 		}
 	}
@@ -198,15 +268,14 @@ partial class WepBase : BaseWeapon
 	public override void CreateViewModel()
 	{
 		Host.AssertClient();
+		
+		ViewModelEntity = new RCViewmodel();
 
-		if ( string.IsNullOrEmpty( ViewModelPath ) )
-			return;
+		ViewModelEntity.SetModel(ViewModelPath);
 
-		ViewModelEntity = new ViewModel();
 		ViewModelEntity.Position = Position;
 		ViewModelEntity.Owner = Owner;
 		ViewModelEntity.EnableViewmodelRendering = true;
-		ViewModelEntity.SetModel( ViewModelPath );
 	}
 
 	public override void CreateHudElements()

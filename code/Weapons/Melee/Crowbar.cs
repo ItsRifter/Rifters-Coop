@@ -36,7 +36,7 @@ partial class Crowbar : WepBase
 		var forward = Owner.EyeRotation.Forward;
 		forward = forward.Normal;
 
-		foreach ( var tr in TraceBullet( Owner.EyePosition, Owner.EyePosition + forward * MeleeDistance, 10f ) )
+		foreach ( var tr in BulletTrace( Owner.EyePosition, Owner.EyePosition + forward * MeleeDistance, 10f ) )
 		{
 			if ( !tr.Entity.IsValid() ) continue;
 

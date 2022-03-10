@@ -11,6 +11,7 @@ public partial class RifterHUD : Sandbox.HudEntity<RootPanel>
 		RootPanel.AddChild<NameTags>();
 
 		RootPanel.AddChild<VitalSigns>();
+		RootPanel.AddChild<AmmoCount>();
 	}
 }
 

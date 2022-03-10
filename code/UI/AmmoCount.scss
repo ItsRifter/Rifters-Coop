@@ -1,0 +1,15 @@
+﻿ammocount {
+    position: absolute;
+    bottom: 16px;
+    right: 100px;
+    font-size: 64px;
+    color: white;
+    mix-blend-mode: lighten;
+    font-family: Roboto;
+    font-size: 48px;
+    opacity: 0;
+
+    &.active {
+        opacity: 1;
+    }
+}

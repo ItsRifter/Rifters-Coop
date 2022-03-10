@@ -5,7 +5,6 @@ using Sandbox;
 
 public partial class BaseNPC : AnimEntity
 {
-	public virtual string BaseModel => "models/citizen/citizen.vmdl";
 	public virtual int BaseHealth => 1;
 	public virtual float BaseSpeed => 1;
 
@@ -16,10 +15,25 @@ public partial class BaseNPC : AnimEntity
 	public virtual float AttackRange => 1;
 	public virtual DamageFlags AttackType => DamageFlags.Generic;
 	public virtual bool isRanged => false;
-	public virtual string AlertSound => "";
-	public virtual string PainSound => "";
+	public virtual string AlertSound { get; set; } = "";
+	public virtual string PainSound { get; set; } = "";
+	public virtual string IdleSound { get; set; } = "";
+	public virtual string DeathSound { get; set; } = "";
+	public virtual int LoseEnemyTime => 1;
+	public enum NPCTeamEnum
+	{
+		Netural,
+		Undead,
+		Rebel,
+		Scientist,
+		Military,
+		Alien,
+	}
 
-	private TimeSince timeLastAttacked;
+	public virtual NPCTeamEnum NPC_Team => NPCTeamEnum.Netural;
+
+	private TimeSince timeIdleSound;
+	private int timeTillIdle;
 
 	//When the NPC finds a player (Only applies if hostile)
 	private PlayerBase targetPlayer;
@@ -27,7 +41,9 @@ public partial class BaseNPC : AnimEntity
 	private bool isInPursuit;
 
 	//Friendly or Hostile
-	public virtual bool IsFriendly => false;
+	public virtual bool IsFriendly { get; set; } = false;
+
+	//Stats
 	public virtual int minRndLevel => 1;
 	public virtual int maxRndLevel => 2;
 
@@ -39,31 +55,44 @@ public partial class BaseNPC : AnimEntity
 
 	public NPCDebugDraw Draw => NPCDebugDraw.Once;
 
-	Vector3 InputVelocity;
+	private Vector3 InputVelocity;
 
-	Vector3 LookDir;
+	private Vector3 LookDir;
+
+	private TimeSince timeLastAttacked;
+
+	private DamageInfo lastDamage;
+
+	private Sound curSound;
+
+	private bool ignorePlayers = false;
+
+	private static bool shouldIgnorePlayers = false;
 
 	[ConVar.Replicated]
 	public static bool rpg_nav_drawpath { get; set; }
 
 	[ConVar.Replicated]
-	public static bool rpg_npc_range { get; set; }
+	public static bool rc_npc_range { get; set; }
 
-	private DamageInfo lastDamage;
-
-	[ServerCmd( "rpg_npc_clear" )]
+	[AdminCmd( "rc_npc_clear" )]
 	public static void ClearAllNPCs()
 	{
 		foreach ( var npc in All.OfType<BaseNPC>().ToArray() )
 			npc.Delete();
 	}
 
+	[AdminCmd("rc_ignoreplayers")]
+	public static void IgnorePlayers(bool shouldEnable)
+	{
+		shouldIgnorePlayers = shouldEnable;
+	}
+
 	NPCNavigation Path = new NPCNavigation();
 	public NPCSteering Steer;
+
 	public override void Spawn()
 	{
-		SetModel( BaseModel );
-
 		//Set the NPC level between min and max level range
 		NPCLevel = Rand.Int( minRndLevel, maxRndLevel );
 
@@ -79,13 +108,14 @@ public partial class BaseNPC : AnimEntity
 
 		EyePosition = Position + Vector3.Up * 64;
 		CollisionGroup = CollisionGroup.Player;
+
 		SetupPhysicsFromModel(PhysicsMotionType.Static);
 
 		EnableHitboxes = true;
 		isInPursuit = false;
 
-		SetBodyGroup( 1, 0 );
-
+		timeIdleSound = 0;
+		timeTillIdle = Rand.Int( 5, 60 );
 		Steer = new NPCSteerWander();
 	}
 
@@ -127,13 +157,26 @@ public partial class BaseNPC : AnimEntity
 		animHelper.WithVelocity( Velocity );
 		animHelper.WithWishVelocity( InputVelocity );
 
+		ignorePlayers = shouldIgnorePlayers;
+
 		if ( !IsFriendly )
 		{
+			if ( timeIdleSound >= timeTillIdle )
+			{
+				timeTillIdle = Rand.Int( 5, 60 );
+				timeIdleSound = 0;
+
+				using ( Prediction.Off() )
+				{
+					curSound = PlaySound( IdleSound );
+				}
+			}
+
 			var ents = FindInSphere( Position + Vector3.Up * 32, AlertRadius );
 
 			foreach ( var entity in ents )
 			{
-				if ( entity is PlayerBase player )
+				if ( entity is PlayerBase player && !ignorePlayers && !isInPursuit )
 				{
 					OnAlert();
 					Steer = new NPCSteering();
@@ -164,7 +207,7 @@ public partial class BaseNPC : AnimEntity
 			}
 
 
-			if ( timeFoundPlayer >= 4.5f && isInPursuit )
+			if ( timeFoundPlayer >= LoseEnemyTime && isInPursuit )
 			{
 				targetPlayer = null;
 				isInPursuit = false;
@@ -174,7 +217,7 @@ public partial class BaseNPC : AnimEntity
 			if ( targetPlayer.IsValid() )
 				Steer.Target = targetPlayer.Position;
 
-			if ( rpg_npc_range )
+			if ( rc_npc_range )
 			{
 				DebugOverlay.Sphere( Position + Vector3.Up * 32, AlertRadius, Color.Green, true );
 				DebugOverlay.Sphere( Position + Vector3.Up * 32, AttackRange, Color.Red, true );
@@ -183,11 +226,14 @@ public partial class BaseNPC : AnimEntity
 	}
 	public virtual void OnAlert()
 	{
-		if ( isInPursuit )
-			return;
-
 		isInPursuit = true;
-		PlaySound( AlertSound );
+
+		using ( Prediction.Off() )
+		{
+			curSound.Stop();
+			curSound = PlaySound( AlertSound );
+		}
+
 		timeFoundPlayer = 0;
 	}
 
@@ -272,16 +318,24 @@ public partial class BaseNPC : AnimEntity
 
 		Health -= info.Damage;
 
+		if ( Health > 0 )
+		{
+			using ( Prediction.Off() )
+			{
+				if(curSound.Finished)
+					curSound = PlaySound( PainSound );
+			}
+		}
+
 		if ( Health <= 0 && info.Attacker is PlayerBase player )
 		{
 			//Give player XP based on reward
 			player.GiveXP( xpReward );
 			OnKilled();
 
-		} else if (Health <= 0)
-		{
-			OnKilled();
 		}
+		else if ( Health <= 0 )
+			OnKilled();
 	
 	}
 
@@ -289,6 +343,13 @@ public partial class BaseNPC : AnimEntity
 	{
 		EnableLagCompensation = false;
 		SpawnNPCRagdoll( lastDamage.Force, lastDamage.HitboxIndex);
+
+		using ( Prediction.Off() )
+		{
+			curSound.Stop();
+			curSound = PlaySound( DeathSound );
+		}
+
 		base.OnKilled();
 	}
 
