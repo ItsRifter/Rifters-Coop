@@ -12,6 +12,15 @@ public partial class RifterHUD : Sandbox.HudEntity<RootPanel>
 
 		RootPanel.AddChild<VitalSigns>();
 		RootPanel.AddChild<AmmoCount>();
+		RootPanel.AddChild<InventoryBar>();
+	}
+
+
+	public void DisplayTextHUD(string text, double duration, int xPos, int yPos )
+	{
+		var displayHUD = new DisplayText( text, duration, xPos, yPos );
+
+		RootPanel.AddChild( displayHUD );
 	}
 }
 

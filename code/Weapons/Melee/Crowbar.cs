@@ -5,24 +5,29 @@ using System.Text;
 using System.Threading.Tasks;
 using Sandbox;
 
-partial class Crowbar : WepBase
+partial class Crowbar : WepBaseCoop
 {
+	public override AmmoType AmmoType => AmmoType.Unspecified;
 	public override string WorldModelPath => "models/weapons/crowbar.vmdl";
-	
-	//public override string ViewModelPath => ""
-
-	public override float PrimaryRate => 1.5f;
-	public override float SecondaryRate => 0.3f;
+	public override string ViewModelPath => "models/weapons/v_crowbar.vmdl";
+	public override float PrimaryRate => 2.0f;
+	public override float SecondaryRate => 0.0f;
 	public override bool IsMelee => true;
-	public override int Bucket => 1;
-
+	public override int Bucket => 0;
+	public override int ClipSize => 0;
 	public override int Damage => 25;
+	public override float WaitFinishDeployed => 1.25f;
 
-	public int MeleeDistance = 80;
+	public int MeleeDistance = 60;
 
 	public override void Spawn()
 	{
 		base.Spawn();
+	}
+
+	public override bool CanPrimaryAttack()
+	{
+		return base.CanPrimaryAttack() && Input.Down(InputButton.Attack1);
 	}
 
 	public override void AttackPrimary()
@@ -33,26 +38,30 @@ partial class Crowbar : WepBase
 
 	public virtual void MeleeStrike()
 	{
-		var forward = Owner.EyeRotation.Forward;
-		forward = forward.Normal;
+		var tr = Trace.Ray( Owner.EyePosition, Owner.EyePosition + Owner.EyeRotation.Forward * MeleeDistance )
+			.Ignore( Owner )
+			.Run();
 
-		foreach ( var tr in BulletTrace( Owner.EyePosition, Owner.EyePosition + forward * MeleeDistance, 10f ) )
+		
+		DebugOverlay.Line( tr.StartPosition, tr.EndPosition, 3 );
+
+		if ( !tr.Entity.IsValid() || !tr.Hit )
 		{
-			if ( !tr.Entity.IsValid() ) continue;
+			ViewModelEntity?.SetAnimParameter( "b_miss", true );
+			ViewModelEntity?.SetAnimParameter( "miss_num", Rand.Int( 1, ViewModelEntity.GetAnimParameterInt( "miss_num_max" ) ) );
+			return;
+		}
 
-			tr.Surface.DoBulletImpact( tr );
+		ViewModelEntity?.SetAnimParameter( "b_hit", true );
+		ViewModelEntity?.SetAnimParameter( "hit_num", Rand.Int( 1, ViewModelEntity.GetAnimParameterInt( "hit_num_max" ) ) );
 
-			if ( !IsServer ) continue;
+		if ( !IsServer ) return;
 
-			using ( Prediction.Off() )
-			{
-				var damageInfo = DamageInfo.FromBullet( tr.EndPosition, forward * 100 * 5, Damage )
-					.UsingTraceResult( tr )
-					.WithAttacker( Owner )
-					.WithWeapon( this );
+		tr.Surface.DoBulletImpact( tr );
 
-				tr.Entity.TakeDamage( damageInfo );
-			}
+		using ( Prediction.Off() )
+		{
+			ShootBullet( 0.0f, 1.0f, Damage, 1.0f );
 		}
 	}
 }

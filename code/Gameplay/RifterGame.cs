@@ -27,6 +27,16 @@ public partial class RifterGame : Sandbox.Game
 			oldHud = new RifterHUD();
 	}
 
+	[ClientRpc]
+	public void DisplayTextUser(string text, double duration, int xPos, int yPos )
+	{
+		if ( oldHud == null )
+			return;
+
+		if(IsClient)
+			oldHud.DisplayTextHUD( text, duration, xPos, yPos );
+	}
+
 	public override void ClientJoined( Client client )
 	{
 		base.ClientJoined( client );

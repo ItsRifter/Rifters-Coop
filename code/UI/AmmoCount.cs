@@ -23,14 +23,21 @@ public partial class AmmoCount : Panel
 
 		if( Local.Pawn is PlayerBase player )
 		{
-			if(player.ActiveChild is WepBase weapon)
+			if(player.ActiveChild is WepBaseCoop weapon)
 			{
-				AmmoLbl.SetText( $"{weapon.AmmoClip}" );
+				if( weapon.IsMelee )
+				{
+					AmmoLbl.SetText( "" );
+					ReserveLbl.SetText( "" );
+				} 
+				else
+				{
+					AmmoLbl.SetText( $"{weapon.AmmoClip}" );
 
-				var inv = weapon.AvailableAmmo();
-				ReserveLbl.Text = $" / {inv}";
-				SetClass( "active", inv >= 0 );
-
+					var inv = weapon.AvailableAmmo();
+					ReserveLbl.Text = $" / {inv}";
+					SetClass( "active", inv >= 0 );
+				}
 			}
 		}
 	}

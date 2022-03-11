@@ -13,6 +13,8 @@ partial class PlayerBase
 
 	public int AmmoCount( AmmoType type )
 	{
+		if ( type == AmmoType.Unspecified ) return 0;
+
 		var iType = (int)type;
 		if ( Ammo == null ) return 0;
 		if ( Ammo.Count <= iType ) return 0;
@@ -22,6 +24,8 @@ partial class PlayerBase
 
 	public bool SetAmmo( AmmoType type, int amount )
 	{
+		if ( type == AmmoType.Unspecified ) return false;
+
 		var iType = (int)type;
 		if ( !Host.IsServer ) return false;
 		if ( Ammo == null ) return false;
@@ -37,6 +41,8 @@ partial class PlayerBase
 
 	public bool GiveAmmo( AmmoType type, int amount )
 	{
+		if ( type == AmmoType.Unspecified ) return false;
+
 		if ( !Host.IsServer ) return false;
 		if ( Ammo == null ) return false;
 
@@ -57,6 +63,7 @@ partial class PlayerBase
 }
 public enum AmmoType
 {
+	Unspecified,
 	Pistol,
 	Magnum,
 	SMG,

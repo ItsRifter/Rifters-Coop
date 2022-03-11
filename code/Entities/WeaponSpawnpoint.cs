@@ -30,7 +30,7 @@ public partial class WeaponSpawnpoint : Entity
 		if ( Weapon_To_Spawn == WeaponEnum.Unspecified )
 			return;
 
-		var weapon = Library.Create<WepBase>( Weapon_To_Spawn.ToString() );
+		var weapon = Library.Create<WepBaseCoop>( Weapon_To_Spawn.ToString() );
 
 		weapon.Spawn();
 

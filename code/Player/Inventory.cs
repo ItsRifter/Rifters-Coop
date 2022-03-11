@@ -13,7 +13,7 @@ partial class Inventory : BaseInventory
 	public override bool Add( Entity ent, bool makeActive = false )
 	{
 		var player = Owner as PlayerBase;
-		var weapon = ent as WepBase;
+		var weapon = ent as WepBaseCoop;
 		var notices = !player.SupressPickupNotices;
 		//
 		// We don't want to pick up the same weapon twice

@@ -56,13 +56,19 @@ partial class PlayerBase : Player
 
 		TickPlayerUse();
 
-		if ( Inventory.Count() == 1 && ActiveChild == null )
-			SwitchToBestWeapon();
+		if ( Input.ActiveChild != null )
+		{
+			ActiveChild = Input.ActiveChild;
+		}
 	}
 
+	public override void StartTouch( Entity other )
+	{
+		base.StartTouch( other );
+	}
 	public void SwitchToBestWeapon()
 	{
-		var best = Children.Select( x => x as WepBase )
+		var best = Children.Select( x => x as WepBaseCoop )
 			.Where( x => x.IsValid() && x.IsUsable() )
 			.OrderByDescending( x => x.BucketWeight )
 			.FirstOrDefault();
@@ -105,10 +111,11 @@ partial class PlayerBase : Player
 
 		setup.FieldOfView += fov;
 	}
-
 	public override void OnKilled()
 	{
 		base.OnKilled();
+
+		ActiveChild = null;
 
 		BecomeRagdollOnClient( lastDMGInfo.Force, lastDMGInfo.HitboxIndex );
 	}

@@ -38,10 +38,16 @@ public partial class NPCSpawnpoint : ModelEntity
 
 	public Output OnSpawn { get; set; }
 
+	private string curModel;
+
 	public override void Spawn()
 	{
 		if ( Spawn_Immediately )
 			SpawnNPC();
+
+		curModel = GetModelName();
+
+		SetModel( "" );
 	}
 
 	[Input]
@@ -54,7 +60,7 @@ public partial class NPCSpawnpoint : ModelEntity
 
 		npc.Spawn();
 
-		npc.SetModel(GetModelName());
+		npc.SetModel( curModel );
 
 		if ( !string.IsNullOrEmpty( Unique_Idle ) )
 			npc.IdleSound = Unique_Idle;

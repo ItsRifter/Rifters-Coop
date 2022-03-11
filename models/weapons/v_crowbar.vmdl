@@ -14,12 +14,12 @@
 						remaps = 
 						[
 							{
-								from = "v_hand_sheet.vmat"
-								to = "v_hand_sheet.vmat"
+								from = "crowbar_cyl.vmat"
+								to = "materials/weapons/v_crowbar.vmat"
 							},
 							{
-								from = "glock.vmat"
-								to = "materials/weapons/glock.vmat"
+								from = "head_uvw.vmat"
+								to = "materials/weapons/v_crowbar_head.vmat"
 							},
 						]
 						use_global_default = false
@@ -33,7 +33,7 @@
 				[
 					{
 						_class = "RenderMeshFile"
-						filename = "models/raw/v_glock.001.smd"
+						filename = "models/raw/crowbar_reference.smd"
 						import_translation = [ 0.0, 0.0, 0.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
 						import_scale = 1.0
@@ -67,175 +67,7 @@
 						hidden = false
 						anim_markup_ordered = false
 						disable_compression = false
-						source_filename = "models/raw/anims/glock/draw.smd"
-						start_frame = -1
-						end_frame = -1
-						framerate = -1.0
-						take = 0
-						reverse = false
-					},
-					{
-						_class = "AnimFile"
-						name = "drawempty"
-						activity_name = ""
-						activity_weight = 1
-						weight_list_name = ""
-						fade_in_time = 0.2
-						fade_out_time = 0.2
-						looping = false
-						delta = false
-						worldSpace = false
-						hidden = false
-						anim_markup_ordered = false
-						disable_compression = false
-						source_filename = "models/raw/anims/glock/drawempty.smd"
-						start_frame = -1
-						end_frame = -1
-						framerate = -1.0
-						take = 0
-						reverse = false
-					},
-					{
-						_class = "AnimFile"
-						name = "fire1"
-						activity_name = ""
-						activity_weight = 1
-						weight_list_name = ""
-						fade_in_time = 0.2
-						fade_out_time = 0.2
-						looping = false
-						delta = false
-						worldSpace = false
-						hidden = false
-						anim_markup_ordered = false
-						disable_compression = false
-						source_filename = "models/raw/anims/glock/fire1.smd"
-						start_frame = -1
-						end_frame = -1
-						framerate = -1.0
-						take = 0
-						reverse = false
-					},
-					{
-						_class = "AnimFile"
-						name = "fire2"
-						activity_name = ""
-						activity_weight = 1
-						weight_list_name = ""
-						fade_in_time = 0.2
-						fade_out_time = 0.2
-						looping = false
-						delta = false
-						worldSpace = false
-						hidden = false
-						anim_markup_ordered = false
-						disable_compression = false
-						source_filename = "models/raw/anims/glock/fire2.smd"
-						start_frame = -1
-						end_frame = -1
-						framerate = -1.0
-						take = 0
-						reverse = false
-					},
-					{
-						_class = "AnimFile"
-						name = "fire3"
-						activity_name = ""
-						activity_weight = 1
-						weight_list_name = ""
-						fade_in_time = 0.2
-						fade_out_time = 0.2
-						looping = false
-						delta = false
-						worldSpace = false
-						hidden = false
-						anim_markup_ordered = false
-						disable_compression = false
-						source_filename = "models/raw/anims/glock/fire3.smd"
-						start_frame = -1
-						end_frame = -1
-						framerate = -1.0
-						take = 0
-						reverse = false
-					},
-					{
-						_class = "AnimFile"
-						name = "fire4"
-						activity_name = ""
-						activity_weight = 1
-						weight_list_name = ""
-						fade_in_time = 0.2
-						fade_out_time = 0.2
-						looping = false
-						delta = false
-						worldSpace = false
-						hidden = false
-						anim_markup_ordered = false
-						disable_compression = false
-						source_filename = "models/raw/anims/glock/fire4.smd"
-						start_frame = -1
-						end_frame = -1
-						framerate = -1.0
-						take = 0
-						reverse = false
-					},
-					{
-						_class = "AnimFile"
-						name = "fire5"
-						activity_name = ""
-						activity_weight = 1
-						weight_list_name = ""
-						fade_in_time = 0.2
-						fade_out_time = 0.2
-						looping = false
-						delta = false
-						worldSpace = false
-						hidden = false
-						anim_markup_ordered = false
-						disable_compression = false
-						source_filename = "models/raw/anims/glock/fire5.smd"
-						start_frame = -1
-						end_frame = -1
-						framerate = -1.0
-						take = 0
-						reverse = false
-					},
-					{
-						_class = "AnimFile"
-						name = "fire6"
-						activity_name = ""
-						activity_weight = 1
-						weight_list_name = ""
-						fade_in_time = 0.2
-						fade_out_time = 0.2
-						looping = false
-						delta = false
-						worldSpace = false
-						hidden = false
-						anim_markup_ordered = false
-						disable_compression = false
-						source_filename = "models/raw/anims/glock/fire6.smd"
-						start_frame = -1
-						end_frame = -1
-						framerate = -1.0
-						take = 0
-						reverse = false
-					},
-					{
-						_class = "AnimFile"
-						name = "fireempty"
-						activity_name = ""
-						activity_weight = 1
-						weight_list_name = ""
-						fade_in_time = 0.2
-						fade_out_time = 0.2
-						looping = false
-						delta = false
-						worldSpace = false
-						hidden = false
-						anim_markup_ordered = false
-						disable_compression = false
-						source_filename = "models/raw/anims/glock/fireempty.smd"
+						source_filename = "models/raw/anims/crowbar/draw.smd"
 						start_frame = -1
 						end_frame = -1
 						framerate = -1.0
@@ -256,7 +88,7 @@
 						hidden = false
 						anim_markup_ordered = false
 						disable_compression = false
-						source_filename = "models/raw/anims/glock/idle01.smd"
+						source_filename = "models/raw/anims/crowbar/idle01.smd"
 						start_frame = -1
 						end_frame = -1
 						framerate = -1.0
@@ -265,7 +97,7 @@
 					},
 					{
 						_class = "AnimFile"
-						name = "idle01empty"
+						name = "misscenter1"
 						activity_name = ""
 						activity_weight = 1
 						weight_list_name = ""
@@ -277,7 +109,7 @@
 						hidden = false
 						anim_markup_ordered = false
 						disable_compression = false
-						source_filename = "models/raw/anims/glock/idle01empty.smd"
+						source_filename = "models/raw/anims/crowbar/misscenter1.smd"
 						start_frame = -1
 						end_frame = -1
 						framerate = -1.0
@@ -286,22 +118,7 @@
 					},
 					{
 						_class = "AnimFile"
-						name = "reload"
-						children = 
-						[
-							{
-								_class = "AnimEvent"
-								event_class = "AE_CL_PLAYSOUND"
-								event_frame = 0
-								event_keys = 
-								{
-									name = "pistol_reload"
-									stop_on_seq_change = false
-									use_layer_sequence = false
-									tags = ""
-								}
-							},
-						]
+						name = "misscenter2"
 						activity_name = ""
 						activity_weight = 1
 						weight_list_name = ""
@@ -313,7 +130,91 @@
 						hidden = false
 						anim_markup_ordered = false
 						disable_compression = false
-						source_filename = "models/raw/anims/glock/reload.smd"
+						source_filename = "models/raw/anims/crowbar/misscenter2.smd"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "hitcenter1"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/raw/anims/crowbar/hitcenter1.smd"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "hitcenter2"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/raw/anims/crowbar/hitcenter2.smd"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "hitcenter3"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/raw/anims/crowbar/hitcenter3.smd"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "hitkill1"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/raw/anims/crowbar/hitkill1.smd"
 						start_frame = -1
 						end_frame = -1
 						framerate = -1.0
@@ -323,24 +224,9 @@
 				]
 				default_root_bone_name = ""
 			},
-			{
-				_class = "AttachmentList"
-				children = 
-				[
-					{
-						_class = "Attachment"
-						name = "muzzle"
-						parent_bone = ""
-						relative_origin = [ 49.73204, -7.986221, -4.560703 ]
-						relative_angles = [ 0.0, 0.0, 0.0 ]
-						weight = 1.0
-						ignore_rotation = false
-					},
-				]
-			},
 		]
 		model_archetype = ""
 		primary_associated_entity = ""
-		anim_graph_name = "animgraphs/weapons/v_glock.vanmgrph"
+		anim_graph_name = "animgraphs/weapons/v_crowbar.vanmgrph"
 	}
 }

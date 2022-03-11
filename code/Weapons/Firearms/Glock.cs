@@ -5,26 +5,27 @@ using System.Text;
 using System.Threading.Tasks;
 using Sandbox;
 
-partial class Glock : WepBase
+partial class Glock : WepBaseCoop
 {
+	public override AmmoType AmmoType => AmmoType.Pistol;
 	public override string ViewModelPath => "models/weapons/v_glock.vmdl";
 	public override string WorldModelPath => "models/weapons/glock19.vmdl";
 	public override int ClipSize => 20;
-	public override float PrimaryRate => 15.0f;
-	public override float SecondaryRate => 1.0f;
+	public override float PrimaryRate => 10.0f;
+	public override float SecondaryRate => 7.5f;
 	public override float ReloadTime => 2.25f;
-	public override int Damage => 20;
+	public override int Damage => 15;
 	public override int Bucket => 1;
 	public override string PickupSound { get; set; } = "default_pickup";
 	public override string FireSound { get; set; } = "pistol_fire";
-
+	public override float WaitFinishDeployed => 0.85f;
 	public override void Spawn()
 	{
 		base.Spawn();
 
-
 		SetModel( WorldModelPath );
 
+		AmmoClip = ClipSize;
 	}
 
 	public override void ActiveStart( Entity ent )
@@ -50,10 +51,19 @@ partial class Glock : WepBase
 		return base.CanPrimaryAttack() && Input.Pressed( InputButton.Attack1 );
 	}
 
+	public override bool CanSecondaryAttack()
+	{
+		return base.CanSecondaryAttack() && Input.Down( InputButton.Attack2 );
+	}
+
+	public override void Reload()
+	{
+		base.Reload();
+		ViewModelEntity?.SetAnimParameter( "empty", false );
+	}
 	public override void AttackPrimary()
 	{
-		TimeSincePrimaryAttack = 0;
-		TimeSinceSecondaryAttack = 0;
+		base.AttackPrimary();
 
 		if ( !TakeAmmo( 1 ) )
 		{
@@ -64,8 +74,29 @@ partial class Glock : WepBase
 		ShootEffects();
 		PlaySound( FireSound );
 
-		ShootBullet( 0.2f, 1.5f, 9.0f, 3.0f );
+		ShootBullet( 0.2f, 1.5f, Damage, 3.0f );
 
+		if ( AmmoClip <= 0 )
+			ViewModelEntity?.SetAnimParameter( "empty", true );
+	}
+
+	public override void AttackSecondary()
+	{
+		base.AttackSecondary();
+
+		if ( !TakeAmmo( 1 ) )
+		{
+			DryFire();
+			return;
+		}
+
+		ShootEffects();
+		PlaySound( FireSound );
+
+		ShootBullet( 0.30f, 1.5f, Damage, 3.0f );
+
+		if ( AmmoClip <= 0 )
+			ViewModelEntity?.SetAnimParameter( "empty", true );
 	}
 
 	[ClientRpc]

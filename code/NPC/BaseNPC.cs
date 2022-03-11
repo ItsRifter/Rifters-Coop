@@ -19,6 +19,8 @@ public partial class BaseNPC : AnimEntity
 	public virtual string PainSound { get; set; } = "";
 	public virtual string IdleSound { get; set; } = "";
 	public virtual string DeathSound { get; set; } = "";
+
+	public virtual string NPCModel { get; set; } = "models/citizen/citizen.vmdl";
 	public virtual int LoseEnemyTime => 1;
 	public enum NPCTeamEnum
 	{
@@ -93,6 +95,8 @@ public partial class BaseNPC : AnimEntity
 
 	public override void Spawn()
 	{
+		SetModel( NPCModel );
+
 		//Set the NPC level between min and max level range
 		NPCLevel = Rand.Int( minRndLevel, maxRndLevel );
 
@@ -327,16 +331,8 @@ public partial class BaseNPC : AnimEntity
 			}
 		}
 
-		if ( Health <= 0 && info.Attacker is PlayerBase player )
-		{
-			//Give player XP based on reward
-			player.GiveXP( xpReward );
+		if ( Health <= 0 )
 			OnKilled();
-
-		}
-		else if ( Health <= 0 )
-			OnKilled();
-	
 	}
 
 	public override void OnKilled()
