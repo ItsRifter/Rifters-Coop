@@ -36,7 +36,7 @@
 						align_origin_x_type = "None"
 						align_origin_y_type = "None"
 						align_origin_z_type = "None"
-						parent_bone = ""
+						parent_bone = "ROOT"
 						import_filter = 
 						{
 							exclude_by_default = false
@@ -59,6 +59,29 @@
 						collision_interact_exclude = ""
 						faceMergeAngle = 20.0
 						maxHullVertices = 32
+					},
+				]
+			},
+			{
+				_class = "Skeleton"
+				children = 
+				[
+					{
+						_class = "Bone"
+						name = "ROOT"
+						children = 
+						[
+							{
+								_class = "Bone"
+								name = "hold_R"
+								origin = [ 3.0, -4.0, 25.0 ]
+								angles = [ 0.0, 0.0, 0.0 ]
+								do_not_discard = true
+							},
+						]
+						origin = [ 0.0, 0.0, 0.0 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						do_not_discard = true
 					},
 				]
 			},

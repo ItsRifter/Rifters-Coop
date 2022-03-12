@@ -114,8 +114,9 @@ partial class PlayerBase : Player
 	public override void OnKilled()
 	{
 		base.OnKilled();
-
+		
 		ActiveChild = null;
+		EnableDrawing = false;
 
 		BecomeRagdollOnClient( lastDMGInfo.Force, lastDMGInfo.HitboxIndex );
 	}
