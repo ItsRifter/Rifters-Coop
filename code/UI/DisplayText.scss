@@ -1,14 +1,14 @@
 ﻿displaytext {
+    position: absolute;
     opacity: 0;
     transition: all 1.0s ease-out;
     font-family: Arial;
-    font-size: 64px;
+    font-size: 48px;
     color: white;
     align-content: center;
     justify-content: center;
     height: 25px;
-    width: 100%;
-    background-color: white;
+    width: 50%;
 
     &.active {
         transition: all 1.0s ease-out;

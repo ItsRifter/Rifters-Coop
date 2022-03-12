@@ -12,7 +12,7 @@ public partial class TextPopup : Entity
 	[Property( "DisplayText" ), Description("Message to display to user")]
 	public string Text_To_Display { get; set; } = "";
 
-	[Property( "DisplayToAll" ), Description( "Display to all users" )]
+	[Property( "DisplayToAll" ), Description( "Display to all users (will use activator of a trigger if disabled)" )]
 	public bool Display_All { get; set; } = false;
 
 	[Property( "TimeDuration" ), Description( "How long does this text last before fade" )]
@@ -29,17 +29,16 @@ public partial class TextPopup : Entity
 	{
 		if ( Display_All )
 		{
-			foreach (var client in Client.All)
-			{
-				if(client.Pawn is PlayerBase player)
-				{
-					RifterGame.Current.DisplayTextUser( To.Everyone, Text_To_Display, Time_Duration, Screen_X_Pos, Screen_Y_Pos );
-				}	
-			}
-		} else
+			RifterGame.Current.DisplayTextUser( To.Everyone, Text_To_Display, Time_Duration, Screen_X_Pos, Screen_Y_Pos );
+		} 
+		/*else if (!Display_All && activator != null)
 		{
-			//TODO, make it appear on a single client
-		}
+			foreach ( var client in Client.All )
+			{
+				if(activator == client && client.Pawn is PlayerBase)
+					RifterGame.Current.DisplayTextUser( To.Single(client), Text_To_Display, Time_Duration, Screen_X_Pos, Screen_Y_Pos );
+			}
+		}*/
 	}
 
 }

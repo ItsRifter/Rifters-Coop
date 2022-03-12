@@ -22,6 +22,9 @@ public partial class WeaponSpawnpoint : Entity
 	public override void Spawn()
 	{
 		base.Spawn();
+
+		if ( Spawn_Immediately )
+			SpawnWeapon();
 	}
 
 	[Input]
@@ -29,6 +32,8 @@ public partial class WeaponSpawnpoint : Entity
 	{
 		if ( Weapon_To_Spawn == WeaponEnum.Unspecified )
 			return;
+
+		Log.Info( "working" );
 
 		var weapon = Library.Create<WepBaseCoop>( Weapon_To_Spawn.ToString() );
 
