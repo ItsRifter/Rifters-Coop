@@ -200,6 +200,7 @@ metadata
 		0 : "Unspecified"
 		1 : "Crowbar"
 		2 : "Glock"
+		3 : "Colt Magnum"
 	]
 	spawnonmap(boolean) : "Spawn Immediately" : 1 : "Should this spawn immediately on map load"
 

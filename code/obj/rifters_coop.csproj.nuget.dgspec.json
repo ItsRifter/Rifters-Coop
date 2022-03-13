@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Program Files (x86)\\Steam\\steamapps\\common\\sbox\\addons\\Rifters_Coop\\code\\rifters_coop.csproj": {}
+    "D:\\Steam\\steamapps\\common\\sbox\\addons\\rifterscoop\\code\\rifters_coop.csproj": {}
   },
   "projects": {
-    "D:\\Program Files (x86)\\Steam\\steamapps\\common\\sbox\\addons\\base\\code\\base.csproj": {
+    "D:\\Steam\\steamapps\\common\\sbox\\addons\\base\\code\\base.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Program Files (x86)\\Steam\\steamapps\\common\\sbox\\addons\\base\\code\\base.csproj",
+        "projectUniqueName": "D:\\Steam\\steamapps\\common\\sbox\\addons\\base\\code\\base.csproj",
         "projectName": "base",
-        "projectPath": "D:\\Program Files (x86)\\Steam\\steamapps\\common\\sbox\\addons\\base\\code\\base.csproj",
-        "packagesPath": "C:\\Users\\d_tho\\.nuget\\packages\\",
-        "outputPath": "D:\\Program Files (x86)\\Steam\\steamapps\\common\\sbox\\addons\\base\\code\\obj\\",
+        "projectPath": "D:\\Steam\\steamapps\\common\\sbox\\addons\\base\\code\\base.csproj",
+        "packagesPath": "C:\\Users\\mancu\\.nuget\\packages\\",
+        "outputPath": "D:\\Steam\\steamapps\\common\\sbox\\addons\\base\\code\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\d_tho\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\mancu\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -54,21 +58,25 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\Program Files (x86)\\Steam\\steamapps\\common\\sbox\\addons\\Rifters_Coop\\code\\rifters_coop.csproj": {
+    "D:\\Steam\\steamapps\\common\\sbox\\addons\\rifterscoop\\code\\rifters_coop.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Program Files (x86)\\Steam\\steamapps\\common\\sbox\\addons\\Rifters_Coop\\code\\rifters_coop.csproj",
+        "projectUniqueName": "D:\\Steam\\steamapps\\common\\sbox\\addons\\rifterscoop\\code\\rifters_coop.csproj",
         "projectName": "rifters_coop",
-        "projectPath": "D:\\Program Files (x86)\\Steam\\steamapps\\common\\sbox\\addons\\Rifters_Coop\\code\\rifters_coop.csproj",
-        "packagesPath": "C:\\Users\\d_tho\\.nuget\\packages\\",
-        "outputPath": "D:\\Program Files (x86)\\Steam\\steamapps\\common\\sbox\\addons\\Rifters_Coop\\code\\obj\\",
+        "projectPath": "D:\\Steam\\steamapps\\common\\sbox\\addons\\rifterscoop\\code\\rifters_coop.csproj",
+        "packagesPath": "C:\\Users\\mancu\\.nuget\\packages\\",
+        "outputPath": "D:\\Steam\\steamapps\\common\\sbox\\addons\\rifterscoop\\code\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\d_tho\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\mancu\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -82,8 +90,8 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "D:\\Program Files (x86)\\Steam\\steamapps\\common\\sbox\\addons\\base\\code\\base.csproj": {
-                "projectPath": "D:\\Program Files (x86)\\Steam\\steamapps\\common\\sbox\\addons\\base\\code\\base.csproj"
+              "D:\\Steam\\steamapps\\common\\sbox\\addons\\base\\code\\base.csproj": {
+                "projectPath": "D:\\Steam\\steamapps\\common\\sbox\\addons\\base\\code\\base.csproj"
               }
             }
           }
@@ -112,7 +120,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
         }
       }
     }

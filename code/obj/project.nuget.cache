@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "a67XJgTKgMa6l02kKIJCAO3SulUWDehRq3vILjTxm/gpHr6q73J6ubTQtpAZ/4pUMIOGaDOmGz00tmh1N1hPww==",
+  "dgSpecHash": "F6c/t6hhzui7YwnHifwUCyiqCd1B0IE2cTs3z3kBy+mdLH37UQR1Fi4HDMJo0bq38Q/iHe0zCnOFs1qPiuPQvg==",
   "success": true,
-  "projectFilePath": "D:\\Program Files (x86)\\Steam\\steamapps\\common\\sbox\\addons\\Rifters_Coop\\code\\rifters_coop.csproj",
+  "projectFilePath": "D:\\Steam\\steamapps\\common\\sbox\\addons\\rifterscoop\\code\\rifters_coop.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

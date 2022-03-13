@@ -10,7 +10,8 @@ public partial class WeaponSpawnpoint : Entity
 	{
 		Unspecified,
 		Crowbar,
-		Glock
+		Glock,
+		ColtMagnum
 	}
 
 	[Property( "WeaponType" ), Description( "What type of weapon is this" )]
