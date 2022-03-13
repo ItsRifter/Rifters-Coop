@@ -59,8 +59,14 @@ public partial class PlayerBase
 			}
 		}
 
-		if( HeldBody.IsValid() )
+		if( HeldBody.IsValid() || HeldEntity.IsValid())
 		{
+			if(GroundEntity == HeldEntity)
+			{
+				GrabEnd();
+				ActiveChild = lastActiveChild;
+			}
+
 			if ( Input.Pressed( InputButton.Attack1 ) && HeldBody.IsValid() )
 			{
 				timeSinceDrop = 0;

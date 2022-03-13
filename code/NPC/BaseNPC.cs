@@ -26,7 +26,7 @@ public partial class BaseNPC : AnimEntity
 	public virtual string DeathSound { get; set; } = "";
 
 	//Model
-	public virtual string NPCModel { get; set; } = "models/citizen/citizen.vmdl";
+	public virtual string NPCModel => "models/citizen/citizen.vmdl";
 
 	//How long until this NPC loses the enemy (or player)
 	public virtual int LoseEnemyTime => 1;
@@ -192,7 +192,7 @@ public partial class BaseNPC : AnimEntity
 
 			if ( targetPlayer.IsValid() )
 			{
-				SetAnimLookAt( "aim_head", targetPlayer.Position);
+				SetAnimLookAt( "aim_head", targetPlayer.Position + Vector3.Up * 64);
 				Steer.Target = targetPlayer.Position;
 
 				if( Position.Distance(targetPlayer.Position) <= AttackRange )
@@ -381,9 +381,6 @@ public partial class BaseNPC : AnimEntity
 		// Copy the clothes over
 		foreach ( var child in Children )
 		{
-			if ( !child.Tags.Has( "clothes" ) )
-				continue;
-
 			if ( child is ModelEntity e )
 			{
 				var clothing = new ModelEntity();

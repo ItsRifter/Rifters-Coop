@@ -20,6 +20,8 @@ partial class Glock : WepBaseCoop
 	public override string PickupSound { get; set; } = "default_pickup";
 	public override string FireSound { get; set; } = "pistol_fire";
 	public override float WaitFinishDeployed => 0.85f;
+	public override float Recoil => 1.75f;
+
 	public override void Spawn()
 	{
 		base.Spawn();

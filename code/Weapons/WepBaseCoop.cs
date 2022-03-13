@@ -18,6 +18,7 @@ public partial class WepBaseCoop : BaseCarriable
 	public virtual string PickupSound { get; set; } = "default_pickup";
 	public virtual string FireSound { get; set; } = "";
 	public virtual float WaitFinishDeployed => 0;
+	public virtual float Recoil => 0;
 
 	[Net, Predicted]
 	public int AmmoClip { get; set; }
@@ -189,10 +190,6 @@ public partial class WepBaseCoop : BaseCarriable
 			forward += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * spread * 0.25f;
 			forward = forward.Normal;
 
-			//
-			// ShootBullet is coded in a way where we can have bullets pass through shit
-			// or bounce off shit, in which case it'll return multiple results
-			//
 			foreach ( var tr in TraceBullet( Owner.EyePosition, Owner.EyePosition + forward * 5000, bulletSize ) )
 			{
 				tr.Surface.DoBulletImpact( tr );

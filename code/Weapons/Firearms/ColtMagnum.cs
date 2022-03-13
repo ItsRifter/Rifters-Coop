@@ -20,6 +20,7 @@ partial class ColtMagnum : WepBaseCoop
 	public override string PickupSound { get; set; } = "default_pickup";
 	public override string FireSound { get; set; } = "357_fire";
 	public override float WaitFinishDeployed => 0.95f;
+	public override float Recoil => 3.5f;
 
 	public override void Spawn()
 	{
@@ -52,6 +53,12 @@ partial class ColtMagnum : WepBaseCoop
 	{
 		return base.CanPrimaryAttack() && Input.Pressed( InputButton.Attack1 );
 	}
+
+	public override bool CanSecondaryAttack()
+	{
+		return false;
+	}
+
 	public override bool CanReload()
 	{
 		if ( TimeSincePrimaryAttack < 0.95f ) return false;
@@ -76,7 +83,7 @@ partial class ColtMagnum : WepBaseCoop
 		ShootEffects();
 		PlaySound( FireSound );
 
-		ShootBullet( 0.2f, 1.5f, Damage, 3.0f );
+		ShootBullet( 0.05f, 1.5f, Damage, 3.0f );
 	}
 
 	[ClientRpc]
@@ -88,7 +95,7 @@ partial class ColtMagnum : WepBaseCoop
 
 		if ( IsLocalPawn )
 		{
-			new Sandbox.ScreenShake.Perlin();
+			new Sandbox.ScreenShake.Perlin(1, 0.6f, Recoil);
 		}
 
 		ViewModelEntity?.SetAnimParameter( "fire", true );

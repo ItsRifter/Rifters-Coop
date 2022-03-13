@@ -13,6 +13,7 @@ public partial class RifterHUD : Sandbox.HudEntity<RootPanel>
 		RootPanel.AddChild<VitalSigns>();
 		RootPanel.AddChild<AmmoCount>();
 		RootPanel.AddChild<InventoryBar>();
+		RootPanel.AddChild<Crosshair>();
 	}
 
 

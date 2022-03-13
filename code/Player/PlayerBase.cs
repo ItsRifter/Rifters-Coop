@@ -15,8 +15,9 @@ partial class PlayerBase : Player
 	//SoundScapes
 	Sound soundScapePlaying;
 	string ssPath;
-	bool shouldChangeSound = true;
-	TimeSince startTime;
+
+	[ConVar.Replicated( "rc_debug" )]
+	public static bool DebugMode { get; set; } = false;
 
 	public PlayerBase()
 	{
@@ -112,9 +113,11 @@ partial class PlayerBase : Player
 		ssPath = sound;
 
 		soundScapePlaying.Stop();
-
 		soundScapePlaying = Sound.FromScreen( ssPath );
-		Log.Info( "Playing Soundscape: " + ssPath );
+		soundScapePlaying.SetVolume( 0.35f );
+
+		if( DebugMode )
+			Log.Info( "Playing Soundscape: " + ssPath );
 	}
 
 	public void SwitchToBestWeapon()

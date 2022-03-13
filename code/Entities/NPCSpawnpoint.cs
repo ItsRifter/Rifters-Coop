@@ -11,7 +11,7 @@ public partial class NPCSpawnpoint : ModelEntity
 	public bool Is_Friendly_NPC { get; set; } = false;
 
 	[Property( "SpawnOnMap" ), Description( "Should this spawn immediately on map load" )]
-	public bool Spawn_Immediately { get; set; } = true;
+	public bool Spawn_Immediately { get; set; } = false;
 	public enum NPCSpawnEnum
 	{
 		Unspecified,
