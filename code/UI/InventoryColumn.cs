@@ -26,6 +26,7 @@ public class InventoryColumn : Panel
 	internal void UpdateWeapon( WepBaseCoop weapon )
 	{
 		var icon = ChildrenOfType<InventoryIcon>().FirstOrDefault( x => x.Weapon == weapon );
+		
 		if ( icon == null )
 		{
 			icon = new InventoryIcon( weapon );

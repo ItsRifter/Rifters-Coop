@@ -7,21 +7,31 @@ public partial class BaseNPC : AnimEntity
 {
 	public virtual int BaseHealth => 1;
 	public virtual float BaseSpeed => 1;
+	public virtual bool IsFriendly { get; set; } = false;
 
 	//Attacking
 	public virtual float AlertRadius => 1;
-	public virtual float AttackCooldown => 1;
-	public virtual float BaseAttackDMG { get; set; } = 1;
+	public virtual float AttackDamage { get; set; } = 1;
 	public virtual float AttackRange => 1;
+	public virtual float TimeToAttack => 1.0f;
 	public virtual DamageFlags AttackType => DamageFlags.Generic;
 	public virtual bool isRanged => false;
+
+	public bool IsAttacking = false;
+
+	//Sounds
 	public virtual string AlertSound { get; set; } = "";
 	public virtual string PainSound { get; set; } = "";
 	public virtual string IdleSound { get; set; } = "";
 	public virtual string DeathSound { get; set; } = "";
 
+	//Model
 	public virtual string NPCModel { get; set; } = "models/citizen/citizen.vmdl";
+
+	//How long until this NPC loses the enemy (or player)
 	public virtual int LoseEnemyTime => 1;
+
+	//Team type
 	public enum NPCTeamEnum
 	{
 		Netural,
@@ -40,20 +50,9 @@ public partial class BaseNPC : AnimEntity
 	//When the NPC finds a player (Only applies if hostile)
 	private PlayerBase targetPlayer;
 	private TimeSince timeFoundPlayer;
-	private bool isInPursuit;
+	private bool isInPursuit;	
 
-	//Friendly or Hostile
-	public virtual bool IsFriendly { get; set; } = false;
-
-	//Stats
-	public virtual int minRndLevel => 1;
-	public virtual int maxRndLevel => 2;
-
-	private int NPCLevel = 0;
-	public virtual int minXP => 1;
-	public virtual int maxXP => 2;
-
-	private int xpReward = 0;
+	public virtual float EyeSightRange => 1f;
 
 	public NPCDebugDraw Draw => NPCDebugDraw.Once;
 
@@ -96,15 +95,6 @@ public partial class BaseNPC : AnimEntity
 	public override void Spawn()
 	{
 		SetModel( NPCModel );
-
-		//Set the NPC level between min and max level range
-		NPCLevel = Rand.Int( minRndLevel, maxRndLevel );
-
-		//Set the base damage to scale with NPC level
-		BaseAttackDMG *= NPCLevel;
-
-		//Set the XP reward between the min and max xp range
-		xpReward = Rand.Int( minXP, maxXP );
 
 		Health = BaseHealth;
 
@@ -165,6 +155,14 @@ public partial class BaseNPC : AnimEntity
 
 		if ( !IsFriendly )
 		{
+			if ( ignorePlayers )
+				return;
+
+			var tr = Trace.Ray( EyePosition, EyePosition + Rotation.Forward * EyeSightRange )
+				.Ignore( this )
+				.Radius( 12.0f )
+				.Run();
+
 			if ( timeIdleSound >= timeTillIdle )
 			{
 				timeTillIdle = Rand.Int( 5, 60 );
@@ -176,40 +174,13 @@ public partial class BaseNPC : AnimEntity
 				}
 			}
 
-			var ents = FindInSphere( Position + Vector3.Up * 32, AlertRadius );
 
-			foreach ( var entity in ents )
+			if ( tr.Entity is PlayerBase player )
 			{
-				if ( entity is PlayerBase player && !ignorePlayers && !isInPursuit )
-				{
-					OnAlert();
-					Steer = new NPCSteering();
-					targetPlayer = player;
-				}
+				OnAlert();
+				Steer = new NPCSteering();
+				targetPlayer = player;
 			}
-
-			if ( !isRanged )
-			{
-				var attackingEnts = FindInSphere( Position + Vector3.Up * 32, AttackRange );
-
-				foreach ( var entity in attackingEnts )
-				{
-					if ( entity is PlayerBase player && player == targetPlayer )
-					{
-						if ( timeLastAttacked >= AttackCooldown )
-						{
-							DamageInfo dmgInfo = new DamageInfo();
-							dmgInfo.Damage = BaseAttackDMG;
-							dmgInfo.Attacker = this;
-							dmgInfo.Flags = AttackType;
-
-							targetPlayer.TakeDamage( dmgInfo );
-							timeLastAttacked = 0;
-						}
-					}
-				}
-			}
-
 
 			if ( timeFoundPlayer >= LoseEnemyTime && isInPursuit )
 			{
@@ -218,18 +189,54 @@ public partial class BaseNPC : AnimEntity
 				Steer = new NPCSteerWander();
 			}
 
+
 			if ( targetPlayer.IsValid() )
+			{
+				SetAnimLookAt( "aim_head", targetPlayer.Position);
 				Steer.Target = targetPlayer.Position;
+
+				if( Position.Distance(targetPlayer.Position) <= AttackRange )
+				{
+					Steer.Target = Position;
+					if( !IsAttacking )
+					{
+						timeLastAttacked = 0;
+						IsAttacking = true;
+					}
+
+					if ( timeLastAttacked >= TimeToAttack && IsAttacking )
+					{
+						DamageInfo dmgInfo = new DamageInfo();
+						dmgInfo.Damage = AttackDamage;
+						dmgInfo.Attacker = this;
+						dmgInfo.Flags = AttackType;
+
+						targetPlayer.TakeDamage( dmgInfo );
+
+						timeLastAttacked = 0;
+					}
+				} 
+				else
+				{
+					IsAttacking = false;
+				}
+			}
 
 			if ( rc_npc_range )
 			{
-				DebugOverlay.Sphere( Position + Vector3.Up * 32, AlertRadius, Color.Green, true );
+				DebugOverlay.TraceResult( tr );
+				//DebugOverlay.Sphere( Position + Vector3.Up * 32, AlertRadius, Color.Green, true );
 				DebugOverlay.Sphere( Position + Vector3.Up * 32, AttackRange, Color.Red, true );
 			}
 		}
 	}
 	public virtual void OnAlert()
 	{
+		timeFoundPlayer = 0;
+
+		if ( isInPursuit )
+			return;
+
 		isInPursuit = true;
 
 		using ( Prediction.Off() )
@@ -238,7 +245,6 @@ public partial class BaseNPC : AnimEntity
 			curSound = PlaySound( AlertSound );
 		}
 
-		timeFoundPlayer = 0;
 	}
 
 	protected virtual void Move( float timeDelta )
@@ -317,6 +323,11 @@ public partial class BaseNPC : AnimEntity
 	{
 		if ( IsFriendly )
 			return;
+
+		OnAlert();
+
+		if(info.Attacker is PlayerBase player)
+			targetPlayer = player;
 
 		lastDamage = info;
 

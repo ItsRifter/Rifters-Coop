@@ -14,6 +14,7 @@ partial class Crowbar : WepBaseCoop
 	public override float SecondaryRate => 0.0f;
 	public override bool IsMelee => true;
 	public override int Bucket => 0;
+	public override int BucketWeight => 0;
 	public override int ClipSize => 0;
 	public override int Damage => 25;
 	public override float WaitFinishDeployed => 1.25f;
@@ -41,9 +42,6 @@ partial class Crowbar : WepBaseCoop
 		var tr = Trace.Ray( Owner.EyePosition, Owner.EyePosition + Owner.EyeRotation.Forward * MeleeDistance )
 			.Ignore( Owner )
 			.Run();
-
-		
-		DebugOverlay.Line( tr.StartPosition, tr.EndPosition, 3 );
 
 		if ( !tr.Entity.IsValid() || !tr.Hit )
 		{

@@ -31,7 +31,7 @@ public partial class VitalSigns : Panel
 		if( Local.Pawn is PlayerBase player )
 		{
 			VitalHud.SetClass( "active", player.Health > 0 );
-			HealthLbl.SetText( $"{player.Health}" );
+			HealthLbl.SetText( $"{Math.Round(player.Health)}" );
 
 			ArmorIcon.SetClass( "active", player.Armor > 0 );
 			ArmorLbl.SetClass( "active", player.Armor > 0 );

@@ -16,6 +16,7 @@ partial class Glock : WepBaseCoop
 	public override float ReloadTime => 2.25f;
 	public override int Damage => 15;
 	public override int Bucket => 1;
+	public override int BucketWeight => 0;
 	public override string PickupSound { get; set; } = "default_pickup";
 	public override string FireSound { get; set; } = "pistol_fire";
 	public override float WaitFinishDeployed => 0.85f;
@@ -30,7 +31,12 @@ partial class Glock : WepBaseCoop
 
 	public override void ActiveStart( Entity ent )
 	{
-		base.ActiveStart(ent);		
+		base.ActiveStart(ent);
+
+		if ( AmmoClip <= 0 && !IsMelee )
+		{
+			ViewModelEntity?.SetAnimParameter( "empty", true );
+		}
 	}
 
 	public override void CreateViewModel()
@@ -54,6 +60,13 @@ partial class Glock : WepBaseCoop
 	public override bool CanSecondaryAttack()
 	{
 		return base.CanSecondaryAttack() && Input.Down( InputButton.Attack2 );
+	}
+
+	public override bool CanReload()
+	{
+		if ( TimeSincePrimaryAttack < 0.5f || TimeSinceSecondaryAttack < 0.5f) return false;
+
+		return base.CanReload();
 	}
 
 	public override void Reload()

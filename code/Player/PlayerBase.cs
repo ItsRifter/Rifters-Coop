@@ -10,6 +10,14 @@ partial class PlayerBase : Player
 
 	private DamageInfo lastDMGInfo;
 
+	public bool DidRespawn = false;
+
+	//SoundScapes
+	Sound soundScapePlaying;
+	string ssPath;
+	bool shouldChangeSound = true;
+	TimeSince startTime;
+
 	public PlayerBase()
 	{
 		Inventory = new Inventory(this);
@@ -17,6 +25,7 @@ partial class PlayerBase : Player
 
 	public override void Respawn()
 	{
+		DidRespawn = true;
 		base.Respawn();
 
 		CameraMode = new FirstPersonCamera();
@@ -35,6 +44,11 @@ partial class PlayerBase : Player
 
 		//Inventory.Add( new Glock(), true );
 		//GiveAmmo( AmmoType.Pistol, 999 );
+
+		holdBody = new PhysicsBody( Map.Physics )
+		{
+			BodyType = PhysicsBodyType.Keyframed
+		};
 
 		SupressPickupNotices = false;
 	}
@@ -55,8 +69,10 @@ partial class PlayerBase : Player
 		SimulateActiveChild( cl, ActiveChild );
 
 		TickPlayerUse();
+		SimulateGrabbing();
+		SimulateSoundScape();
 
-		if ( Input.ActiveChild != null )
+		if ( Input.ActiveChild != null && !HeldBody.IsValid() )
 		{
 			ActiveChild = Input.ActiveChild;
 		}
@@ -66,11 +82,46 @@ partial class PlayerBase : Player
 	{
 		base.StartTouch( other );
 	}
+
+	public Sound GetSoundScapePlaying()
+	{
+		return soundScapePlaying;
+	}
+
+	public string GetSoundScapePath()
+	{
+		return ssPath;
+	}
+
+	public void SimulateSoundScape()
+	{
+		if( soundScapePlaying.Finished )
+			soundScapePlaying = Sound.FromScreen( ssPath );
+	}
+
+	public void ContinueSoundScape( string sound )
+	{
+		soundScapePlaying = Sound.FromScreen( ssPath );
+	}
+
+	public void PlaySoundScape(string sound)
+	{
+		if ( IsClient )
+			return;
+
+		ssPath = sound;
+
+		soundScapePlaying.Stop();
+
+		soundScapePlaying = Sound.FromScreen( ssPath );
+		Log.Info( "Playing Soundscape: " + ssPath );
+	}
+
 	public void SwitchToBestWeapon()
 	{
 		var best = Children.Select( x => x as WepBaseCoop )
 			.Where( x => x.IsValid() && x.IsUsable() )
-			.OrderByDescending( x => x.BucketWeight )
+			.OrderByDescending( x => x.Bucket )
 			.FirstOrDefault();
 
 		if ( best == null ) return;
@@ -114,7 +165,12 @@ partial class PlayerBase : Player
 	public override void OnKilled()
 	{
 		base.OnKilled();
-		
+
+		holdBody?.Remove();
+		holdBody = null;
+
+		GrabEnd();
+
 		ActiveChild = null;
 		EnableDrawing = false;
 

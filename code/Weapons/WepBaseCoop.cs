@@ -7,8 +7,8 @@ public partial class WepBaseCoop : BaseCarriable
 	public virtual AmmoType AmmoType => AmmoType.Pistol;
 	public virtual int ClipSize => 1;
 	public virtual float ReloadTime => 3.0f;
-	public virtual int Bucket => 1;
-	public virtual int BucketWeight => 100;
+	public virtual int Bucket => 0;
+	public virtual int BucketWeight => 0;
 	public virtual new string ViewModelPath => "";
 	public virtual string WorldModelPath => "";
 	public virtual float PrimaryRate => 5.0f;
@@ -54,11 +54,6 @@ public partial class WepBaseCoop : BaseCarriable
 
 		IsReloading = false;
 
-		if ( AmmoClip <= 0 && !IsMelee)
-		{
-			ViewModelEntity?.SetAnimParameter( "empty", true );
-		}
-
 		ViewModelEntity?.SetAnimParameter( "deploy", true );
 	}
 
@@ -75,6 +70,9 @@ public partial class WepBaseCoop : BaseCarriable
 
 	public virtual void Reload()
 	{
+		if ( !CanReload() )
+			return;
+
 		if ( IsReloading )
 			return;
 
@@ -281,6 +279,8 @@ public partial class WepBaseCoop : BaseCarriable
 	public virtual bool CanReload()
 	{
 		if ( !Owner.IsValid() || !Input.Down( InputButton.Reload ) ) return false;
+
+		if ( TimeSinceDeployed < WaitFinishDeployed + 0.25f ) return false;
 
 		return true;
 	}

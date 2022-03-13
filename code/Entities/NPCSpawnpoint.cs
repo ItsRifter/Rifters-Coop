@@ -37,8 +37,13 @@ public partial class NPCSpawnpoint : ModelEntity
 	public int Unique_Health { get; set; } = 0;
 
 	public Output OnSpawn { get; set; }
+	public Output OnDeath { get; set; }
 
 	private string curModel;
+
+	private BaseNPC spawnedNPC;
+
+	private bool IsNPCDead = false;
 
 	public override void Spawn()
 	{
@@ -48,6 +53,16 @@ public partial class NPCSpawnpoint : ModelEntity
 		curModel = GetModelName();
 
 		SetModel( "" );
+	}
+
+	[Event.Tick.Server]
+	public void Update()
+	{
+		if ( !spawnedNPC.IsValid() && !IsNPCDead )
+		{
+			OnDeath.Fire( this );
+			IsNPCDead = true;
+		}
 	}
 
 	[Input]
@@ -81,7 +96,10 @@ public partial class NPCSpawnpoint : ModelEntity
 		npc.Rotation = Rotation;
 
 		npc.IsFriendly = Is_Friendly_NPC;
-		
+
+		spawnedNPC = npc;
+		IsNPCDead = false;
+
 		OnSpawn.Fire(this);
 	}
 }
