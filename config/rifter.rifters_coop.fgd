@@ -64,6 +64,8 @@ metadata
 	uniquehealth(integer) : "Unique Health" : 0 : "Sets the health (LEAVE AS 0 TO USE DEFAULT)"
 	enable_shadows(boolean) { group = "Rendering" } : "Shadow Casting" : 1 : "Whether this entity should cast shadows or not"
 
+	input AssignNPC(string) : ""
+	input KillNPC(void) : ""
 	input SpawnNPC(void) : ""
 	input SetColor(string) : "Sets the color of this entity. Format is '255 255 255 255'."
 

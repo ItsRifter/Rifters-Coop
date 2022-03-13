@@ -47,6 +47,12 @@ public partial class NPCSpawnpoint : ModelEntity
 
 	public override void Spawn()
 	{
+		if ( string.IsNullOrEmpty( GetModelName() ) )
+		{ 
+			Log.Warning( Name + " has an invalid model" );
+			return;
+		}
+
 		if ( Spawn_Immediately )
 			SpawnNPC();
 
@@ -66,8 +72,31 @@ public partial class NPCSpawnpoint : ModelEntity
 	}
 
 	[Input]
+	public void AssignNPC(string newNPCType)
+	{
+		if( newNPCType.ToUpper() == "ZOMBIE" )
+			NPC_To_Spawn = NPCSpawnEnum.Zombie;
+	}
+
+	[Input]
+	public void KillNPC()
+	{
+		if ( !spawnedNPC.IsValid() )
+			return;
+
+		spawnedNPC.Health = 0;
+		spawnedNPC.OnKilled();
+	}
+
+	[Input]
 	public void SpawnNPC()
 	{
+		if ( string.IsNullOrEmpty( curModel ) )
+		{
+			Log.Warning(Name + " has an invalid model");
+			return;
+		}
+
 		if ( NPC_To_Spawn == NPCSpawnEnum.Unspecified )
 			return;
 
@@ -95,6 +124,7 @@ public partial class NPCSpawnpoint : ModelEntity
 		npc.Position = Position;
 		npc.Rotation = Rotation;
 
+		npc.RenderColor = RenderColor;
 		npc.IsFriendly = Is_Friendly_NPC;
 
 		spawnedNPC = npc;
