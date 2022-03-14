@@ -43,6 +43,8 @@ partial class PlayerBase : Player
 
 		Inventory.DeleteContents();
 
+		ApplyClothing();
+
 		//Inventory.Add( new Glock(), true );
 		//GiveAmmo( AmmoType.Pistol, 999 );
 
@@ -54,6 +56,40 @@ partial class PlayerBase : Player
 		SupressPickupNotices = false;
 	}
 
+	public void ApplyClothing()
+	{
+		var hat = new ModelEntity();
+		hat.SetModel( "models/citizen_clothes/hat/hat_woolly.vmdl_c" );
+		hat.SetParent( this, true );
+		
+		var vest = new ModelEntity();
+		vest.SetModel( "models/citizen_clothes/vest/Tactical_Vest/Models/tactical_vest.vmdl_c" );
+		vest.SetParent( this, true );
+
+		var shirt = new ModelEntity();
+		shirt.SetModel( "models/citizen_clothes/jacket/jacket.red.vmdl_c" );
+		shirt.SetParent( this, true );
+
+		var trousers = new ModelEntity();
+		trousers.SetModel( "models/citizen_clothes/jacket/longsleeve/models/jeans.vmdl_c" );
+		trousers.SetParent( this, true );
+
+		var boots = new ModelEntity();
+		boots.SetModel( "models/citizen_clothes/shoes/shoes.workboots.vmdl_c" );
+		boots.SetParent( this, true );
+
+		hat.Tags.Add( "clothes" );
+		vest.Tags.Add( "clothes" );
+		shirt.Tags.Add( "clothes" );
+		trousers.Tags.Add( "clothes" );
+		boots.Tags.Add( "clothes" );
+
+		hat.EnableHideInFirstPerson = true;
+		vest.EnableHideInFirstPerson = true;
+		shirt.EnableHideInFirstPerson = true;
+		trousers.EnableHideInFirstPerson = true;
+		boots.EnableHideInFirstPerson = true;
+	}
 	public override void TakeDamage( DamageInfo info )
 	{
 		if ( info.Attacker is PlayerBase )
@@ -81,6 +117,13 @@ partial class PlayerBase : Player
 
 	public override void StartTouch( Entity other )
 	{
+		//Checks if over the weapon ammo limit
+		if(other is WepBaseCoop weapon )
+		{
+			if ( !weapon.IsMelee && AmmoCount( weapon.AmmoType ) >= AmmoLimit[(int)weapon.AmmoType] )
+				return;
+		}
+
 		base.StartTouch( other );
 	}
 

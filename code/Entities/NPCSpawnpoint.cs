@@ -91,15 +91,11 @@ public partial class NPCSpawnpoint : ModelEntity
 	[Input]
 	public void SpawnNPC()
 	{
-		if ( string.IsNullOrEmpty( curModel ) )
+		if ( NPC_To_Spawn == NPCSpawnEnum.Unspecified )
 		{
-			Log.Warning(Name + " has an invalid model");
+			Log.Warning( Name + " is set to an unspecific npc type" );
 			return;
 		}
-
-		if ( NPC_To_Spawn == NPCSpawnEnum.Unspecified )
-			return;
-
 		var npc = Library.Create<BaseNPC>( NPC_To_Spawn.ToString() );
 
 		npc.Spawn();

@@ -58,6 +58,22 @@ public partial class WepBaseCoop : BaseCarriable
 		ViewModelEntity?.SetAnimParameter( "deploy", true );
 	}
 
+	public override void StartTouch( Entity other )
+	{
+		if ( other is PlayerBase player )
+		{
+			if ( (player.AmmoCount( AmmoType ) + ClipSize) > player.AmmoLimit[(int)AmmoType] )
+			{
+				AmmoClip = player.AmmoLimit[(int)AmmoType] - player.AmmoCount( AmmoType );
+				return;
+			} 
+			else if ( player.AmmoCount( AmmoType ) >= player.AmmoLimit[(int)AmmoType])
+			{
+				return;
+			}
+		}
+	}
+
 	public override void Spawn()
 	{
 		base.Spawn();
@@ -197,6 +213,16 @@ public partial class WepBaseCoop : BaseCarriable
 				if ( !IsServer ) continue;
 				if ( !tr.Entity.IsValid() ) continue;
 
+				if(!IsMelee)
+				{
+					//Headshot
+					if ( tr.HitboxIndex == 5 )
+						damage *= 2;
+					//Body shot
+					else if ( tr.HitboxIndex == 2 || tr.HitboxIndex == 3 )
+						damage *= 1.5f;
+				}
+
 				var damageInfo = DamageInfo.FromBullet( tr.EndPosition, forward * 100 * force, damage )
 					.UsingTraceResult( tr )
 					.WithAttacker( Owner )
@@ -255,6 +281,18 @@ public partial class WepBaseCoop : BaseCarriable
 
 	public override void OnCarryStart( Entity carrier )
 	{
+		if ( carrier is PlayerBase player )
+		{
+			if ( (player.AmmoCount( AmmoType ) + ClipSize) > player.AmmoLimit[(int)AmmoType] )
+			{
+				return;
+			}
+			else if ( player.AmmoCount( AmmoType ) >= player.AmmoLimit[(int)AmmoType] )
+			{
+				return;
+			}
+		}
+
 		base.OnCarryStart( carrier );
 
 		if ( PickupTrigger.IsValid() )

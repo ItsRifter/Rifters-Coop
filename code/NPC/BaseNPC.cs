@@ -25,9 +25,6 @@ public partial class BaseNPC : AnimEntity
 	public virtual string IdleSound { get; set; } = "";
 	public virtual string DeathSound { get; set; } = "";
 
-	//Model
-	public virtual string NPCModel => "models/citizen/citizen.vmdl";
-
 	//How long until this NPC loses the enemy (or player)
 	public virtual int LoseEnemyTime => 1;
 
@@ -94,8 +91,6 @@ public partial class BaseNPC : AnimEntity
 
 	public override void Spawn()
 	{
-		SetModel( NPCModel );
-
 		Health = BaseHealth;
 
 		EnableLagCompensation = true;
@@ -137,6 +132,7 @@ public partial class BaseNPC : AnimEntity
 		Move( Time.Delta );
 
 		var walkVelocity = Velocity.WithZ( 0 );
+		
 		if ( walkVelocity.Length > 0.5f )
 		{
 			var turnSpeed = walkVelocity.Length.LerpInverse( 0, 100, true );
@@ -144,7 +140,7 @@ public partial class BaseNPC : AnimEntity
 			Rotation = Rotation.Lerp( Rotation, targetRotation, turnSpeed * Time.Delta * 20.0f );
 		}
 
-		var animHelper = new CitizenAnimationHelper( this );
+		var animHelper = new NPCAnimationHelper( this );
 
 		LookDir = Vector3.Lerp( LookDir, InputVelocity.WithZ( 0 ) * 1000, Time.Delta * 100.0f );
 		animHelper.WithLookAt( EyePosition + LookDir );
@@ -155,12 +151,10 @@ public partial class BaseNPC : AnimEntity
 
 		if ( !IsFriendly )
 		{
-			if ( ignorePlayers )
-				return;
-
-			var tr = Trace.Ray( EyePosition, EyePosition + Rotation.Forward * EyeSightRange )
+			
+			var tr = Trace.Ray(EyePosition, EyePosition + Rotation.Forward * EyeSightRange )
 				.Ignore( this )
-				.Radius( 12.0f )
+				.Radius( 36.0f )
 				.Run();
 
 			if ( timeIdleSound >= timeTillIdle )
@@ -174,9 +168,11 @@ public partial class BaseNPC : AnimEntity
 				}
 			}
 
-
 			if ( tr.Entity is PlayerBase player )
 			{
+				if ( ignorePlayers )
+					return;
+
 				OnAlert();
 				Steer = new NPCSteering();
 				targetPlayer = player;
@@ -188,7 +184,6 @@ public partial class BaseNPC : AnimEntity
 				isInPursuit = false;
 				Steer = new NPCSteerWander();
 			}
-
 
 			if ( targetPlayer.IsValid() )
 			{
@@ -225,11 +220,16 @@ public partial class BaseNPC : AnimEntity
 			if ( rc_npc_range )
 			{
 				DebugOverlay.TraceResult( tr );
-				//DebugOverlay.Sphere( Position + Vector3.Up * 32, AlertRadius, Color.Green, true );
 				DebugOverlay.Sphere( Position + Vector3.Up * 32, AttackRange, Color.Red, true );
 			}
 		}
 	}
+
+	private Vector3 DirectionAngle(float angleDegrees)
+	{
+		return new Vector3( MathF.Sin( angleDegrees * MathX.DegreeToRadian( angleDegrees ) ), 0, MathF.Cos( angleDegrees * MathX.DegreeToRadian( angleDegrees ) ) );
+	}
+
 	public virtual void OnAlert()
 	{
 		timeFoundPlayer = 0;
@@ -316,6 +316,7 @@ public partial class BaseNPC : AnimEntity
 
 		Position += Velocity * Time.Delta;
 
+		EyeRotation = Rotation;
 		EyePosition = Position;
 	}
 
@@ -324,7 +325,8 @@ public partial class BaseNPC : AnimEntity
 		if ( IsFriendly )
 			return;
 
-		OnAlert();
+		if ( !ignorePlayers )
+			OnAlert();
 
 		if(info.Attacker is PlayerBase player)
 			targetPlayer = player;

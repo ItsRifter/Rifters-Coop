@@ -36,8 +36,24 @@
 				children = 
 				[
 					{
-						_class = "Prefab"
-						target_file = "models/citizen/prefabs/citizen_materialgrouplist.vmdl_prefab"
+						_class = "DefaultMaterialGroup"
+						remaps = 
+						[
+							{
+								from = "citizen_eyeao.vmat"
+								to = "models/citizen/skin/citizen_eyeao.vmat"
+							},
+							{
+								from = "citizen_eyes.vmat"
+								to = "materials/npcs/zombie_eye.vmat"
+							},
+							{
+								from = "citizen_skin.vmat"
+								to = "materials/npcs/zombie_citizen_2.vmat"
+							},
+						]
+						use_global_default = false
+						global_default_material = ""
 					},
 				]
 			},
