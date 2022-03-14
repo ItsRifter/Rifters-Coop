@@ -5,7 +5,7 @@ using System.Linq;
 
 public partial class Zombie : BaseNPC
 {
-	public override int BaseHealth => 50;
+	public override int BaseHealth => 60;
 	public override float BaseSpeed => 30;
 	public override float AlertRadius => 162;
 	public override float TimeToAttack => 1.5f;

@@ -14,7 +14,7 @@ partial class ColtMagnum : WepBaseCoop
 	public override float PrimaryRate => 1.25f;
 	public override float SecondaryRate => 0.0f;
 	public override float ReloadTime => 3.25f;
-	public override int Damage => 35;
+	public override int Damage => 40;
 	public override int Bucket => 1;
 	public override int BucketWeight => 1;
 	public override string PickupSound { get; set; } = "default_pickup";

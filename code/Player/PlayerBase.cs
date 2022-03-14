@@ -107,7 +107,6 @@ partial class PlayerBase : Player
 
 		TickPlayerUse();
 		SimulateGrabbing();
-		SimulateSoundScape();
 
 		if ( Input.ActiveChild != null && !HeldBody.IsValid() )
 		{
@@ -137,20 +136,10 @@ partial class PlayerBase : Player
 		return ssPath;
 	}
 
-	public void SimulateSoundScape()
+	[ClientRpc]
+	public void SoundScapeClient( string sound )
 	{
-		if( soundScapePlaying.Finished )
-			soundScapePlaying = Sound.FromScreen( ssPath );
-	}
-
-	public void ContinueSoundScape( string sound )
-	{
-		soundScapePlaying = Sound.FromScreen( ssPath );
-	}
-
-	public void PlaySoundScape(string sound)
-	{
-		if ( IsClient )
+		if ( ssPath == sound )
 			return;
 
 		ssPath = sound;
@@ -159,8 +148,22 @@ partial class PlayerBase : Player
 		soundScapePlaying = Sound.FromScreen( ssPath );
 		soundScapePlaying.SetVolume( 0.35f );
 
-		if( DebugMode )
-			Log.Info( "Playing Soundscape: " + ssPath );
+		if ( DebugMode )
+			Log.Info( "Playing Soundscape " + ssPath );
+	}
+
+	public void PlaySoundScape(string sound)
+	{
+		if ( IsClient )
+			return;
+
+		if ( sound == ssPath )
+			return;
+
+		ssPath = sound;
+
+		soundScapePlaying.Stop();
+		SoundScapeClient( To.Single( this ), ssPath );
 	}
 
 	public void SwitchToBestWeapon()
