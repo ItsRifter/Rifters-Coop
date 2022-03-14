@@ -12,7 +12,7 @@ partial class PlayerBase
 		1,
 		150,
 		12,
-		255,
+		225,
 		30,
 		10,
 		5,

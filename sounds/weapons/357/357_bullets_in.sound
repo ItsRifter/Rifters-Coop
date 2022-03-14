@@ -6,5 +6,12 @@
 		[
 			"sounds/raw/weapons/357/357_reload4.vsnd",
 		]
+		ui = false
+		volume = 0.7
+		volumerandom = 0.0
+		pitch = 1.0
+		pitchrandom = 0.0
+		distancemax = 2000.0
+		selectionmode = "3"
 	}
 }

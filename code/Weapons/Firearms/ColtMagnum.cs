@@ -74,11 +74,14 @@ partial class ColtMagnum : WepBaseCoop
 	{
 		base.AttackPrimary();
 
-		if ( !TakeAmmo( 1 ) )
+		if ( !TakeAmmo( 1, false ) )
 		{
 			DryFire();
 			return;
 		}
+
+		if ( AmmoClip == 2 )
+			Sound.FromScreen( "hud_ammo_warning" );
 
 		ShootEffects();
 		PlaySound( FireSound );

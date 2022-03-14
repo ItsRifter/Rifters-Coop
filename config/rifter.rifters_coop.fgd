@@ -89,6 +89,10 @@ metadata
 	givecrowbar(boolean) : "Should Give Crowbar" : 0 : "Give the Crowbar on player spawn"
 	giveglock(boolean) : "Should Give Glock" : 0 : "Give the Glock on player spawn"
 	giverevolver(boolean) : "Should Give Revolver" : 0 : "Give the Revolver on player spawn"
+	givesmg(boolean) : "Should Give SMG" : 0 : "Give the SMG on player spawn"
+	givepistolammo(integer) { min = 0 max = 150 } : "Pistol Ammo To Give" : 0 : "How much Pistol9 ammo to give on player spawn"
+	givemagnumammo(integer) { min = 0 max = 12 } : "Magnum Ammo To Give" : 0 : "How much Magnum ammo to give on player spawn"
+	givesmgammo(integer) { min = 0 max = 225 } : "SMG Ammo To Give" : 0 : "How much SMG ammo to give on player spawn"
 ]
 
 //

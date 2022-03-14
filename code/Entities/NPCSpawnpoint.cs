@@ -49,7 +49,7 @@ public partial class NPCSpawnpoint : ModelEntity
 	{
 		if ( string.IsNullOrEmpty( GetModelName() ) )
 		{ 
-			Log.Warning( Name + " has an invalid model" );
+			Log.Warning( Name + " has an invalid model, will use default" );
 			return;
 		}
 

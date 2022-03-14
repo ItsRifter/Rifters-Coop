@@ -80,11 +80,14 @@ partial class Glock : WepBaseCoop
 	{
 		base.AttackPrimary();
 
-		if ( !TakeAmmo( 1 ) )
+		if ( !TakeAmmo( 1, false ) )
 		{
 			DryFire();
 			return;
 		}
+
+		if ( AmmoClip == 5 )
+			Sound.FromScreen( "hud_ammo_warning" );
 
 		ShootEffects();
 		PlaySound( FireSound );
@@ -99,11 +102,14 @@ partial class Glock : WepBaseCoop
 	{
 		base.AttackSecondary();
 
-		if ( !TakeAmmo( 1 ) )
+		if ( !TakeAmmo( 1, false ) )
 		{
 			DryFire();
 			return;
 		}
+
+		if ( AmmoClip == 5 )
+			Sound.FromScreen( "hud_ammo_warning" );
 
 		ShootEffects();
 		PlaySound( FireSound );
@@ -123,7 +129,7 @@ partial class Glock : WepBaseCoop
 
 		if ( IsLocalPawn )
 		{
-			new Sandbox.ScreenShake.Perlin();
+			new Sandbox.ScreenShake.Perlin( 1, 1.0f, Recoil );
 		}
 
 		if(AmmoClip > 0)

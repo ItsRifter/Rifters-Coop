@@ -14,7 +14,11 @@ partial class PlayerBase : Player
 
 	//SoundScapes
 	Sound soundScapePlaying;
+	TimeSince timeSinceStep;
 	string ssPath;
+
+	Vector3 fallingVelocity;
+	float fallDamage = 0;
 
 	[ConVar.Replicated( "rc_debug" )]
 	public static bool DebugMode { get; set; } = false;
@@ -90,6 +94,34 @@ partial class PlayerBase : Player
 		trousers.EnableHideInFirstPerson = true;
 		boots.EnableHideInFirstPerson = true;
 	}
+
+	[AdminCmd("rc_impulse")]
+	public static void ImpulseCMD(int impulseCMD)
+	{
+		Event.Run( "rc_evnt_impulse", impulseCMD);
+	}
+
+	[Event("rc_evnt_impulse")]
+	public void Impulse(int impulse)
+	{
+		if ( impulse == 101 )
+		{
+			Inventory.Add( new Crowbar() );
+			Inventory.Add( new Glock() );
+			Inventory.Add( new ColtMagnum() );
+			Inventory.Add( new SMG() );
+
+			SetAmmo( AmmoType.Pistol, 150 );
+			SetAmmo( AmmoType.Magnum, 12 );
+			SetAmmo( AmmoType.SMG, 225 );
+			SetAmmo( AmmoType.Buckshot, 30 );
+			SetAmmo( AmmoType.Crossbow, 10 );
+			SetAmmo( AmmoType.Grenades, 5 );
+			SetAmmo( AmmoType.Rockets, 3 );
+			SetAmmo( AmmoType.Misc, 50 );
+		}
+	}
+
 	public override void TakeDamage( DamageInfo info )
 	{
 		if ( info.Attacker is PlayerBase )
@@ -111,6 +143,85 @@ partial class PlayerBase : Player
 		if ( Input.ActiveChild != null && !HeldBody.IsValid() )
 		{
 			ActiveChild = Input.ActiveChild;
+		}
+
+		if ( GroundEntity == null )
+		{
+			SimulateFalling();
+		}
+		else
+		{
+			if( fallDamage > 0 )
+			{
+				DamageInfo dmgInfo = new DamageInfo();
+				dmgInfo.Damage = fallDamage;
+				dmgInfo.Flags = DamageFlags.Fall;
+
+				fallDamage = 0;
+
+				if ( Health - fallDamage > 0 )
+					PlaySound( "fall_pain" );
+				else if (Health - fallDamage <= 0 )
+					PlaySound( "fall_death" );
+
+				TakeDamage( dmgInfo );
+			}
+
+			SimulateFootsteps();
+		}
+	}
+
+	//Handles footstep sounds
+	private void SimulateFootsteps()
+	{
+		var controlSpeed = Controller as WalkController;
+
+		if ( controlSpeed.Duck.IsActive )
+			return;
+
+		//Standing still
+		if ( controlSpeed.Velocity == new Vector3( 0, 0, 0 ) )
+			return;
+
+		if ( timeSinceStep < 1.0f )
+			return;
+
+		var footTR = Trace.Ray( EyePosition, EyePosition + Vector3.Down * 100 )
+			.Ignore( this )
+			.Run();
+
+		if ( footTR.Surface.Name.Contains( "concrete" ) )
+			PlaySound( "concrete_step" );
+		
+		if ( footTR.Surface.Name.Contains( "dirt" ) )
+			PlaySound( "grass_step" );
+
+		if ( footTR.Surface.Name.Contains( "wood" ) )
+			PlaySound( "wood_step" );
+
+		if ( footTR.Surface.Name.Contains( "metal" ) )
+			PlaySound( "metal_step" );
+
+		if ( footTR.Surface.Name.Contains( "plastic" ) )
+			PlaySound( "tile_step" );
+
+		if ( controlSpeed.GetWishSpeed() == controlSpeed.SprintSpeed )
+			timeSinceStep = 0.75f;
+		else if ( controlSpeed.GetWishSpeed() == controlSpeed.DefaultSpeed )
+			timeSinceStep = 0.60f;
+		else if ( controlSpeed.GetWishSpeed() == controlSpeed.WalkSpeed )
+			timeSinceStep = 0.35f;
+	}
+
+	//Handles fall damage
+	private void SimulateFalling()
+	{
+		fallingVelocity.z = Velocity.z;
+
+		if(fallingVelocity.z < -650.0f)
+		{
+			fallDamage = fallingVelocity.z / 22.5f;
+			fallDamage = -fallDamage;
 		}
 	}
 
@@ -146,7 +257,7 @@ partial class PlayerBase : Player
 
 		soundScapePlaying.Stop();
 		soundScapePlaying = Sound.FromScreen( ssPath );
-		soundScapePlaying.SetVolume( 0.35f );
+		soundScapePlaying.SetVolume( 0.25f );
 
 		if ( DebugMode )
 			Log.Info( "Playing Soundscape " + ssPath );
@@ -214,9 +325,6 @@ partial class PlayerBase : Player
 	public override void OnKilled()
 	{
 		base.OnKilled();
-
-		holdBody?.Remove();
-		holdBody = null;
 
 		GrabEnd();
 

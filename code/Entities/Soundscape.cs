@@ -20,8 +20,7 @@ public partial class Soundscape : Entity
 
 	public override void Spawn()
 	{
-		base.Spawn();
-		
+		base.Spawn();	
 	}
 
 	[Event.Tick.Server]

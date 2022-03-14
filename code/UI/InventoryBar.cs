@@ -87,7 +87,7 @@ public class InventoryBar : Panel
 			input.SuppressButton( InputButton.Attack1 );
 			input.ActiveChild = SelectedWeapon;
 			IsOpen = false;
-			//Sound.FromScreen( "dm.ui_select" );
+			Sound.FromScreen( "hud_selected" );
 			return;
 		}
 
@@ -109,7 +109,7 @@ public class InventoryBar : Panel
 
 		if ( oldSelected != SelectedWeapon )
 		{
-			//Sound.FromScreen( "dm.ui_tap" );
+			Sound.FromScreen( "hud_selectweapon" );
 		}
 	}
 

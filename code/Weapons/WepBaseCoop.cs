@@ -6,6 +6,8 @@ public partial class WepBaseCoop : BaseCarriable
 {
 	public virtual AmmoType AmmoType => AmmoType.Pistol;
 	public virtual int ClipSize => 1;
+	public virtual int SecondaryClipSize => 0;
+	public int SecondaryAmmoClip { get; set; } = 0;
 	public virtual float ReloadTime => 3.0f;
 	public virtual int Bucket => 0;
 	public virtual int BucketWeight => 0;
@@ -233,12 +235,29 @@ public partial class WepBaseCoop : BaseCarriable
 		}
 	}
 
-	public bool TakeAmmo( int amount )
+	public virtual void ShootExplosive( float spread, float force, float damage )
 	{
-		if ( AmmoClip < amount )
-			return false;
+		if ( Host.IsClient )
+			return;
+	}
 
-		AmmoClip -= amount;
+	public bool TakeAmmo( int amount, bool isAltfire )
+	{
+		if( isAltfire )
+		{
+			if ( SecondaryAmmoClip < amount )
+				return false;
+		} else
+		{
+			if ( AmmoClip < amount)
+				return false;
+		}
+
+		if ( isAltfire )
+			SecondaryAmmoClip -= amount;
+		else
+			AmmoClip -= amount;
+
 		return true;
 	}
 
