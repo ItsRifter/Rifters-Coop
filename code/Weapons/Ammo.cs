@@ -6,6 +6,20 @@ partial class PlayerBase
 	[Net]
 	public IList<int> Ammo { get; set; }
 
+	//In order using AmmoType
+	public int[] AmmoLimit = new int[9]
+	{
+		1,
+		150,
+		12,
+		225,
+		30,
+		10,
+		5,
+		3,
+		50
+	};
+
 	public void ClearAmmo()
 	{
 		Ammo.Clear();

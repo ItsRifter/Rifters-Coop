@@ -11,7 +11,7 @@ public partial class NPCSpawnpoint : ModelEntity
 	public bool Is_Friendly_NPC { get; set; } = false;
 
 	[Property( "SpawnOnMap" ), Description( "Should this spawn immediately on map load" )]
-	public bool Spawn_Immediately { get; set; } = true;
+	public bool Spawn_Immediately { get; set; } = false;
 	public enum NPCSpawnEnum
 	{
 		Unspecified,
@@ -37,11 +37,22 @@ public partial class NPCSpawnpoint : ModelEntity
 	public int Unique_Health { get; set; } = 0;
 
 	public Output OnSpawn { get; set; }
+	public Output OnDeath { get; set; }
 
 	private string curModel;
 
+	private BaseNPC spawnedNPC;
+
+	private bool IsNPCDead = false;
+
 	public override void Spawn()
 	{
+		if ( string.IsNullOrEmpty( GetModelName() ) )
+		{ 
+			Log.Warning( Name + " has an invalid model, will use default" );
+			return;
+		}
+
 		if ( Spawn_Immediately )
 			SpawnNPC();
 
@@ -50,12 +61,41 @@ public partial class NPCSpawnpoint : ModelEntity
 		SetModel( "" );
 	}
 
+	[Event.Tick.Server]
+	public void Update()
+	{
+		if ( !spawnedNPC.IsValid() && !IsNPCDead )
+		{
+			OnDeath.Fire( this );
+			IsNPCDead = true;
+		}
+	}
+
+	[Input]
+	public void AssignNPC(string newNPCType)
+	{
+		if( newNPCType.ToUpper() == "ZOMBIE" )
+			NPC_To_Spawn = NPCSpawnEnum.Zombie;
+	}
+
+	[Input]
+	public void KillNPC()
+	{
+		if ( !spawnedNPC.IsValid() )
+			return;
+
+		spawnedNPC.Health = 0;
+		spawnedNPC.OnKilled();
+	}
+
 	[Input]
 	public void SpawnNPC()
 	{
 		if ( NPC_To_Spawn == NPCSpawnEnum.Unspecified )
+		{
+			Log.Warning( Name + " is set to an unspecific npc type" );
 			return;
-
+		}
 		var npc = Library.Create<BaseNPC>( NPC_To_Spawn.ToString() );
 
 		npc.Spawn();
@@ -80,8 +120,12 @@ public partial class NPCSpawnpoint : ModelEntity
 		npc.Position = Position;
 		npc.Rotation = Rotation;
 
+		npc.RenderColor = RenderColor;
 		npc.IsFriendly = Is_Friendly_NPC;
-		
+
+		spawnedNPC = npc;
+		IsNPCDead = false;
+
 		OnSpawn.Fire(this);
 	}
 }

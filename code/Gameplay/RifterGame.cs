@@ -45,5 +45,6 @@ public partial class RifterGame : Sandbox.Game
 		client.Pawn = player;
 
 		player.Respawn();
+		player.ApplyClothing();
 	}
 }

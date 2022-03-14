@@ -6,9 +6,11 @@ public partial class WepBaseCoop : BaseCarriable
 {
 	public virtual AmmoType AmmoType => AmmoType.Pistol;
 	public virtual int ClipSize => 1;
+	public virtual int SecondaryClipSize => 0;
+	public int SecondaryAmmoClip { get; set; } = 0;
 	public virtual float ReloadTime => 3.0f;
-	public virtual int Bucket => 1;
-	public virtual int BucketWeight => 100;
+	public virtual int Bucket => 0;
+	public virtual int BucketWeight => 0;
 	public virtual new string ViewModelPath => "";
 	public virtual string WorldModelPath => "";
 	public virtual float PrimaryRate => 5.0f;
@@ -18,6 +20,7 @@ public partial class WepBaseCoop : BaseCarriable
 	public virtual string PickupSound { get; set; } = "default_pickup";
 	public virtual string FireSound { get; set; } = "";
 	public virtual float WaitFinishDeployed => 0;
+	public virtual float Recoil => 0;
 
 	[Net, Predicted]
 	public int AmmoClip { get; set; }
@@ -54,12 +57,23 @@ public partial class WepBaseCoop : BaseCarriable
 
 		IsReloading = false;
 
-		if ( AmmoClip <= 0 && !IsMelee)
-		{
-			ViewModelEntity?.SetAnimParameter( "empty", true );
-		}
-
 		ViewModelEntity?.SetAnimParameter( "deploy", true );
+	}
+
+	public override void StartTouch( Entity other )
+	{
+		if ( other is PlayerBase player )
+		{
+			if ( (player.AmmoCount( AmmoType ) + ClipSize) > player.AmmoLimit[(int)AmmoType] )
+			{
+				AmmoClip = player.AmmoLimit[(int)AmmoType] - player.AmmoCount( AmmoType );
+				return;
+			} 
+			else if ( player.AmmoCount( AmmoType ) >= player.AmmoLimit[(int)AmmoType])
+			{
+				return;
+			}
+		}
 	}
 
 	public override void Spawn()
@@ -75,6 +89,9 @@ public partial class WepBaseCoop : BaseCarriable
 
 	public virtual void Reload()
 	{
+		if ( !CanReload() )
+			return;
+
 		if ( IsReloading )
 			return;
 
@@ -191,16 +208,22 @@ public partial class WepBaseCoop : BaseCarriable
 			forward += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * spread * 0.25f;
 			forward = forward.Normal;
 
-			//
-			// ShootBullet is coded in a way where we can have bullets pass through shit
-			// or bounce off shit, in which case it'll return multiple results
-			//
 			foreach ( var tr in TraceBullet( Owner.EyePosition, Owner.EyePosition + forward * 5000, bulletSize ) )
 			{
 				tr.Surface.DoBulletImpact( tr );
 
 				if ( !IsServer ) continue;
 				if ( !tr.Entity.IsValid() ) continue;
+
+				if(!IsMelee)
+				{
+					//Headshot
+					if ( tr.HitboxIndex == 5 )
+						damage *= 2;
+					//Body shot
+					else if ( tr.HitboxIndex == 2 || tr.HitboxIndex == 3 )
+						damage *= 1.5f;
+				}
 
 				var damageInfo = DamageInfo.FromBullet( tr.EndPosition, forward * 100 * force, damage )
 					.UsingTraceResult( tr )
@@ -212,12 +235,29 @@ public partial class WepBaseCoop : BaseCarriable
 		}
 	}
 
-	public bool TakeAmmo( int amount )
+	public virtual void ShootExplosive( float spread, float force, float damage )
 	{
-		if ( AmmoClip < amount )
-			return false;
+		if ( Host.IsClient )
+			return;
+	}
 
-		AmmoClip -= amount;
+	public bool TakeAmmo( int amount, bool isAltfire )
+	{
+		if( isAltfire )
+		{
+			if ( SecondaryAmmoClip < amount )
+				return false;
+		} else
+		{
+			if ( AmmoClip < amount)
+				return false;
+		}
+
+		if ( isAltfire )
+			SecondaryAmmoClip -= amount;
+		else
+			AmmoClip -= amount;
+
 		return true;
 	}
 
@@ -260,6 +300,18 @@ public partial class WepBaseCoop : BaseCarriable
 
 	public override void OnCarryStart( Entity carrier )
 	{
+		if ( carrier is PlayerBase player )
+		{
+			if ( (player.AmmoCount( AmmoType ) + ClipSize) > player.AmmoLimit[(int)AmmoType] )
+			{
+				return;
+			}
+			else if ( player.AmmoCount( AmmoType ) >= player.AmmoLimit[(int)AmmoType] )
+			{
+				return;
+			}
+		}
+
 		base.OnCarryStart( carrier );
 
 		if ( PickupTrigger.IsValid() )
@@ -281,6 +333,8 @@ public partial class WepBaseCoop : BaseCarriable
 	public virtual bool CanReload()
 	{
 		if ( !Owner.IsValid() || !Input.Down( InputButton.Reload ) ) return false;
+
+		if ( TimeSinceDeployed < WaitFinishDeployed + 0.25f ) return false;
 
 		return true;
 	}

@@ -42,7 +42,7 @@ partial class BreakableWall : AnimEntity
 		if ( HealthUntilBreak == -1 )
 			return;
 
-		if ( info.Damage < MinDamage )
+		if ( MinDamage != 0 && info.Damage < MinDamage )
 			info.Damage = 0;
 
 		HealthUntilBreak -= info.Damage;

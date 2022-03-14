@@ -14,6 +14,8 @@ public class InventoryBar : Panel
 
 	public InventoryBar()
 	{
+		StyleSheet.Load( "UI/InventoryBar.scss" );
+
 		for ( int i = 0; i < 6; i++ )
 		{
 			var icon = new InventoryColumn( i, this );
@@ -25,7 +27,7 @@ public class InventoryBar : Panel
 	{
 		base.Tick();
 
-		SetClass( "active", IsOpen );
+		SetClass( "active", IsOpen);
 
 		var player = Local.Pawn as PlayerBase;
 		if ( player == null ) return;
@@ -47,7 +49,10 @@ public class InventoryBar : Panel
 	public void ProcessClientInput( InputBuilder input )
 	{
 		bool wantOpen = IsOpen;
-		var localPlayer = Local.Pawn as Player;
+		var localPlayer = Local.Pawn as PlayerBase;
+
+		if ( localPlayer.HeldBody.IsValid() )
+			return;
 
 		// If we're not open, maybe this input has something that will 
 		// make us want to start being open?
@@ -65,38 +70,31 @@ public class InventoryBar : Panel
 			return;
 		}
 
-		// We're not open, but we want to be
 		if ( IsOpen != wantOpen )
 		{
 			SelectedWeapon = localPlayer?.ActiveChild as WepBaseCoop;
 
-			if ( SelectedWeapon.IsReloading )
+			if ( SelectedWeapon.IsValid() && SelectedWeapon.IsReloading )
 				return;
 
 			IsOpen = true;
 		}
 
-		// Not open fuck it off
 		if ( !IsOpen ) return;
 
-		//
-		// Fire pressed when we're open - select the weapon and close.
-		//
 		if ( input.Down( InputButton.Attack1 ) )
 		{
 			input.SuppressButton( InputButton.Attack1 );
 			input.ActiveChild = SelectedWeapon;
 			IsOpen = false;
-			//Sound.FromScreen( "dm.ui_select" );
+			Sound.FromScreen( "hud_selected" );
 			return;
 		}
 
-		// get our current index
 		var oldSelected = SelectedWeapon;
 		int SelectedIndex = Weapons.IndexOf( SelectedWeapon );
 		SelectedIndex = SlotPressInput( input, SelectedIndex );
 
-		// forward if mouse wheel was pressed
 		SelectedIndex += input.MouseWheel;
 		SelectedIndex = SelectedIndex.UnsignedMod( Weapons.Count );
 
@@ -111,7 +109,7 @@ public class InventoryBar : Panel
 
 		if ( oldSelected != SelectedWeapon )
 		{
-			//Sound.FromScreen( "dm.ui_tap" );
+			Sound.FromScreen( "hud_selectweapon" );
 		}
 	}
 
@@ -150,6 +148,7 @@ public class InventoryBar : Panel
 
 		WepBaseCoop first = null;
 		WepBaseCoop prev = null;
+
 		foreach ( var weapon in Weapons.Where( x => x.Bucket == SelectedWeapon.Bucket ).OrderBy( x => x.BucketWeight ) )
 		{
 			if ( first == null ) first = weapon;

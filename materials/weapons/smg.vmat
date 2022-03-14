@@ -4,17 +4,10 @@ Layer0
 {
 	shader "vr_simple.vfx"
 
-	//---- PBR ----
-	F_AMBIENT_OCCLUSION_TEXTURE 1
-	F_METALNESS_TEXTURE 1
-
-	//---- Ambient Occlusion ----
-	TextureAmbientOcclusion "materials/raw/lambert1_AO.png"
-
 	//---- Color ----
 	g_flModelTintAmount "1.000"
 	g_vColorTint "[1.000000 1.000000 1.000000 0.000000]"
-	TextureColor "materials/raw/lambert1_BC.png"
+	TextureColor "materials/raw/v_smg1_d.jpg"
 
 	//---- Fade ----
 	g_flFadeExponent "1.000"
@@ -27,13 +20,13 @@ Layer0
 	g_flDirectionalLightmapStrength "1.000"
 
 	//---- Metalness ----
-	TextureMetalness "materials/raw/lambert1_MT.png"
+	g_flMetalness "0.000"
 
 	//---- Normal ----
-	TextureNormal "materials/raw/lambert1_N.png"
+	TextureNormal "materials/raw/v_smg1_n.jpg"
 
 	//---- Roughness ----
-	TextureRoughness "materials/raw/lambert1_R.png"
+	TextureRoughness "materials/default/default_rough.tga"
 
 	//---- Texture Coordinates ----
 	g_nScaleTexCoordUByModelScaleAxis "0"
