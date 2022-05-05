@@ -47,4 +47,30 @@ public partial class RifterGame : Sandbox.Game
 		player.Respawn();
 		player.ApplyClothing();
 	}
+
+	[ServerCmd( "rc_impulse" )]
+	public static void ImpulseCMD( int impulseCMD )
+	{
+		var caller = ConsoleSystem.Caller.Pawn as PlayerBase;
+
+		if ( caller == null )
+			return;
+
+		if ( impulseCMD == 101 )
+		{
+			caller.Inventory.Add( new Crowbar() );
+			caller.Inventory.Add( new Glock() );
+			caller.Inventory.Add( new ColtMagnum() );
+			caller.Inventory.Add( new SMG() );
+
+			caller.SetAmmo( AmmoType.Pistol, 150 );
+			caller.SetAmmo( AmmoType.Magnum, 12 );
+			caller.SetAmmo( AmmoType.SMG, 225 );
+			caller.SetAmmo( AmmoType.Buckshot, 30 );
+			caller.SetAmmo( AmmoType.Crossbow, 10 );
+			caller.SetAmmo( AmmoType.Grenades, 5 );
+			caller.SetAmmo( AmmoType.Rockets, 3 );
+			caller.SetAmmo( AmmoType.Misc, 50 );
+		}
+	}
 }

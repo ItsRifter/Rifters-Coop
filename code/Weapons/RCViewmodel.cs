@@ -26,6 +26,6 @@ partial class RCViewmodel : BaseViewModel
 		}
 
 		Position += up * MathF.Sin( walkBob ) * speed * -0.5f;
-		Position += left * MathF.Sin( walkBob * 0.6f ) * speed * -2.5f;
+		Position += left * MathF.Sin( walkBob * 0.6f ) * speed * -1.75f;
 	}
 }

@@ -88,7 +88,7 @@ partial class SMG : WepBaseCoop
 		}
 
 		if ( AmmoClip == 15 )
-			Sound.FromScreen( "hud_ammo_warning" );
+			PlaySound( "hud_ammo_warning" );
 
 		ShootEffects();
 		PlaySound( FireSound );
@@ -108,7 +108,7 @@ partial class SMG : WepBaseCoop
 
 		PlaySound( FireSound );
 		ViewModelEntity?.SetAnimParameter( "altfire", true );
-		ShootExplosive( 0.0f, 2.5f, Damage * 2);
+		//ShootExplosive( 0.0f, 2.5f, Damage * 2);
 	}
 
 	public override void ShootExplosive( float spread, float force, float damage )

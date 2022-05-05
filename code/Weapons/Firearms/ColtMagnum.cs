@@ -81,7 +81,7 @@ partial class ColtMagnum : WepBaseCoop
 		}
 
 		if ( AmmoClip == 2 )
-			Sound.FromScreen( "hud_ammo_warning" );
+			PlaySound( "hud_ammo_warning" );
 
 		ShootEffects();
 		PlaySound( FireSound );

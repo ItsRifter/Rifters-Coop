@@ -95,33 +95,6 @@ partial class PlayerBase : Player
 		boots.EnableHideInFirstPerson = true;
 	}
 
-	[AdminCmd("rc_impulse")]
-	public static void ImpulseCMD(int impulseCMD)
-	{
-		Event.Run( "rc_evnt_impulse", impulseCMD);
-	}
-
-	[Event("rc_evnt_impulse")]
-	public void Impulse(int impulse)
-	{
-		if ( impulse == 101 )
-		{
-			Inventory.Add( new Crowbar() );
-			Inventory.Add( new Glock() );
-			Inventory.Add( new ColtMagnum() );
-			Inventory.Add( new SMG() );
-
-			SetAmmo( AmmoType.Pistol, 150 );
-			SetAmmo( AmmoType.Magnum, 12 );
-			SetAmmo( AmmoType.SMG, 225 );
-			SetAmmo( AmmoType.Buckshot, 30 );
-			SetAmmo( AmmoType.Crossbow, 10 );
-			SetAmmo( AmmoType.Grenades, 5 );
-			SetAmmo( AmmoType.Rockets, 3 );
-			SetAmmo( AmmoType.Misc, 50 );
-		}
-	}
-
 	public override void TakeDamage( DamageInfo info )
 	{
 		if ( info.Attacker is PlayerBase )

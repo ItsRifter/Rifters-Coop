@@ -87,7 +87,7 @@ partial class Glock : WepBaseCoop
 		}
 
 		if ( AmmoClip == 5 )
-			Sound.FromScreen( "hud_ammo_warning" );
+			PlaySound( "hud_ammo_warning" );
 
 		ShootEffects();
 		PlaySound( FireSound );
@@ -109,7 +109,7 @@ partial class Glock : WepBaseCoop
 		}
 
 		if ( AmmoClip == 5 )
-			Sound.FromScreen( "hud_ammo_warning" );
+			PlaySound( "hud_ammo_warning" );
 
 		ShootEffects();
 		PlaySound( FireSound );
